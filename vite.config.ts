@@ -10,6 +10,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["lottie-react"],
+  },
   server: {
     proxy: {
       "/auth": {
