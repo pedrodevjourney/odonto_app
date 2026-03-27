@@ -3,13 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
+import { PageActionsProvider, usePageActions } from "@/contexts/PageActionsContext";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-
-// ---------------------------------------------------------------------------
-// UserMenu — dropdown com opções do usuário
-// ---------------------------------------------------------------------------
 
 function UserMenu() {
   const [open, setOpen] = useState(false);
@@ -58,10 +55,11 @@ function UserMenu() {
               "disabled:pointer-events-none disabled:opacity-50",
             )}
           >
-            {loggingOut
-              ? <Loader2 className="size-4 shrink-0 animate-spin" />
-              : <LogOut className="size-4 shrink-0" />
-            }
+            {loggingOut ? (
+              <Loader2 className="size-4 shrink-0 animate-spin" />
+            ) : (
+              <LogOut className="size-4 shrink-0" />
+            )}
             {loggingOut ? "Saindo..." : "Sair"}
           </button>
         </div>
@@ -70,12 +68,9 @@ function UserMenu() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Topbar
-// ---------------------------------------------------------------------------
-
 function Topbar() {
   const { toggleOpen } = useSidebar();
+  const { actions } = usePageActions();
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-5 shadow-sm">
@@ -90,6 +85,8 @@ function Topbar() {
 
       <div className="flex-1" />
 
+      {actions && <div className="flex items-center gap-2">{actions}</div>}
+
       <Button variant="ghost" size="icon-sm" aria-label="Notificações">
         <Bell className="size-5" />
       </Button>
@@ -99,20 +96,18 @@ function Topbar() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Layout
-// ---------------------------------------------------------------------------
-
 export function DashboardLayout() {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <div className="flex min-h-screen flex-1 flex-col overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto bg-[#A8DFF5]/10 p-6">
-          <Outlet />
-        </main>
-      </div>
+      <PageActionsProvider>
+        <AppSidebar />
+        <div className="flex min-h-screen flex-1 flex-col overflow-hidden">
+          <Topbar />
+          <main className="flex-1 overflow-y-auto bg-[#A8DFF5]/10 p-6">
+            <Outlet />
+          </main>
+        </div>
+      </PageActionsProvider>
     </SidebarProvider>
   );
 }

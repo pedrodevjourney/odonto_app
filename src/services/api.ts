@@ -35,12 +35,13 @@ export async function apiFetch<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
+  const { headers: extraHeaders, ...restOptions } = options ?? {};
   const response = await fetch(`${BASE_URL}${path}`, {
+    ...restOptions,
     headers: {
       "Content-Type": "application/json",
-      ...options?.headers,
+      ...extraHeaders,
     },
-    ...options,
   });
 
   if (!response.ok) {
