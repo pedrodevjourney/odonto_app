@@ -19,6 +19,14 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+      "/consultas": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/profissionais": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
     },
   },
 });

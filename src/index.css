@@ -133,3 +133,122 @@
     font-family: var(--font-serif);
   }
 }
+
+/* datetime-local input theming */
+input[type="datetime-local"] {
+  accent-color: var(--primary);
+  color-scheme: light;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-day-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-month-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-year-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-hour-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-minute-field:focus {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 2px;
+}
+
+::-webkit-calendar-picker-indicator {
+  accent-color: var(--primary);
+  color: var(--primary);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+input[type="datetime-local"].dt-empty:not(:focus)::-webkit-datetime-edit {
+  color: transparent;
+}
+
+/* FullCalendar theme overrides */
+.agenda-calendar {
+  --fc-border-color: oklch(0.922 0 0 / 40%);
+  --fc-today-bg-color: oklch(0.88 0.06 210 / 5%);
+  --fc-now-indicator-color: oklch(0.88 0.06 210);
+  --fc-event-border-color: transparent;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+
+  .fc {
+    font-family: var(--font-sans);
+  }
+
+  .fc .fc-col-header-cell {
+    padding: 0.625rem 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: oklch(0.556 0 0);
+    background: oklch(0.97 0 0 / 50%);
+  }
+
+  .fc .fc-timegrid-slot-label {
+    font-size: 0.7rem;
+    color: oklch(0.556 0 0 / 70%);
+    font-weight: 500;
+  }
+
+  .fc .fc-timegrid-slot {
+    height: 3rem;
+  }
+
+  .fc .fc-event {
+    border-radius: 0.5rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: none;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+
+  .fc .fc-event:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    transform: translateY(-1px);
+  }
+
+  .fc .fc-event .fc-event-time {
+    font-size: 0.65rem;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  .fc .fc-event .fc-event-title {
+    font-weight: 500;
+  }
+
+  .fc .fc-timegrid-now-indicator-line {
+    border-width: 2px;
+  }
+
+  .fc .fc-timegrid-now-indicator-arrow {
+    border-width: 5px;
+  }
+
+  .fc .fc-day-today .fc-col-header-cell-cushion {
+    color: oklch(0.88 0.06 210);
+    font-weight: 700;
+  }
+
+  .fc .fc-highlight {
+    background: oklch(0.88 0.06 210 / 10%);
+    border-radius: 0.375rem;
+  }
+
+  .fc .fc-scrollgrid {
+    border: none;
+  }
+
+  .fc .fc-scrollgrid td,
+  .fc .fc-scrollgrid th {
+    border-color: oklch(0.922 0 0 / 40%);
+  }
+}
