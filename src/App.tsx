@@ -1,11 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { LoginPage } from "@/pages/LoginPage";
-import { DashboardHomePage } from "@/pages/DashboardHomePage";
-import { AgendaPage } from "@/pages/AgendaPage";
-import { PacientesPage } from "@/pages/PacientesPage";
-import { PagamentosPage } from "@/pages/PagamentosPage";
+import { AuthProvider } from "@/features/auth/contexts/AuthContext";
+import { DashboardLayout } from "@/features/dashboard/components/DashboardLayout";
+import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { DashboardHomePage } from "@/features/dashboard/pages/DashboardHomePage";
+import { AgendaPage } from "@/features/agenda/pages/AgendaPage";
+import { PacientesPage } from "@/features/pacientes/pages/PacientesPage";
+import { PagamentosPage } from "@/features/pagamentos/pages/PagamentosPage";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function App() {

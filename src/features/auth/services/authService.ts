@@ -1,5 +1,5 @@
-import { apiFetch } from "./api";
-import type { LoginRequest, LoginResponse } from "@/types/auth";
+import { apiFetch } from "@/core/api";
+import type { LoginRequest, LoginResponse } from "@/features/auth/types/auth";
 
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
   return apiFetch<LoginResponse>("/auth/login", {

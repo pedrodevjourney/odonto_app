@@ -1,12 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import logoOdonto from "@/assets/logo_odonto_sem_bg.png";
-import { toast } from "sonner";
-
 import {
   Form,
   FormControl,
@@ -14,19 +7,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-
-import { login } from "@/services/authService";
-import { useAuth } from "@/contexts/AuthContext";
-
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "E-mail é obrigatório")
-    .email({ message: "Informe um e-mail válido" }),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { useLoginViewModel } from "@/features/auth/viewmodels/useLoginViewModel";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -69,42 +50,14 @@ function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
   e.target.style.background = "oklch(1 0 0)";
 }
 
-function handleBlurReset(e: React.FocusEvent<HTMLInputElement>) {
+function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
   e.target.style.borderColor = "oklch(0.88 0.02 230)";
   e.target.style.boxShadow = "none";
   e.target.style.background = "oklch(0.975 0.005 230)";
 }
 
 export function LoginForm() {
-  const [apiError, setApiError] = useState("");
-  const { setToken } = useAuth();
-  const navigate = useNavigate();
-
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    mode: "onBlur",
-    defaultValues: { email: "", password: "" },
-  });
-
-  const {
-    formState: { isSubmitting },
-  } = form;
-
-  async function onSubmit(values: LoginFormValues) {
-    setApiError("");
-    try {
-      const { token } = await login(values);
-      setToken(token, values.email);
-      toast.success("Login realizado com sucesso!");
-      navigate("/dashboard");
-    } catch (err) {
-      setApiError(
-        err instanceof Error
-          ? err.message
-          : "Erro ao fazer login. Tente novamente.",
-      );
-    }
-  }
+  const { form, apiError, isSubmitting, onSubmit } = useLoginViewModel();
 
   return (
     <div
@@ -138,12 +91,7 @@ export function LoginForm() {
           <img
             src={logoOdonto}
             alt="Logo Clínica Odontológica"
-            style={{
-              width: "136px",
-              height: "136px",
-              objectFit: "contain",
-              marginBottom: "16px",
-            }}
+            style={{ width: "136px", height: "136px", objectFit: "contain", marginBottom: "16px" }}
           />
           <h1
             style={{
@@ -157,23 +105,13 @@ export function LoginForm() {
           >
             Bem-vindo de volta
           </h1>
-          <p
-            style={{
-              fontSize: "13.5px",
-              color: "oklch(0.55 0.02 240)",
-              margin: "6px 0 0",
-              lineHeight: 1.5,
-            }}
-          >
+          <p style={{ fontSize: "13.5px", color: "oklch(0.55 0.02 240)", margin: "6px 0 0", lineHeight: 1.5 }}>
             Acesse o sistema de gestão odontológica
           </p>
         </div>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            style={{ display: "flex", flexDirection: "column", gap: "18px" }}
-          >
+          <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
             <FormField
               control={form.control}
               name="email"
@@ -182,15 +120,7 @@ export function LoginForm() {
                   <label style={labelStyle}>E-mail</label>
                   <FormControl>
                     <div style={{ position: "relative" }}>
-                      <svg
-                        style={iconStyle}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
+                      <svg style={iconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <rect width="20" height="16" x="2" y="4" rx="2" />
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                       </svg>
@@ -201,10 +131,7 @@ export function LoginForm() {
                         style={inputStyle}
                         onFocus={handleFocus}
                         {...field}
-                        onBlur={(e) => {
-                          handleBlurReset(e);
-                          field.onBlur();
-                        }}
+                        onBlur={(e) => { handleBlur(e); field.onBlur(); }}
                       />
                     </div>
                   </FormControl>
@@ -221,23 +148,8 @@ export function LoginForm() {
                   <label style={labelStyle}>Senha</label>
                   <FormControl>
                     <div style={{ position: "relative" }}>
-                      <svg
-                        style={iconStyle}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect
-                          width="18"
-                          height="11"
-                          x="3"
-                          y="11"
-                          rx="2"
-                          ry="2"
-                        />
+                      <svg style={iconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                       </svg>
                       <input
@@ -247,10 +159,7 @@ export function LoginForm() {
                         style={inputStyle}
                         onFocus={handleFocus}
                         {...field}
-                        onBlur={(e) => {
-                          handleBlurReset(e);
-                          field.onBlur();
-                        }}
+                        onBlur={(e) => { handleBlur(e); field.onBlur(); }}
                       />
                     </div>
                   </FormControl>
@@ -306,26 +215,21 @@ export function LoginForm() {
               onMouseEnter={(e) => {
                 if (!isSubmitting) {
                   (e.target as HTMLButtonElement).style.opacity = "0.92";
-                  (e.target as HTMLButtonElement).style.transform =
-                    "translateY(-1px)";
+                  (e.target as HTMLButtonElement).style.transform = "translateY(-1px)";
                   (e.target as HTMLButtonElement).style.boxShadow =
                     "0 6px 20px oklch(0.18 0.06 240 / 0.4), 0 2px 4px oklch(0 0 0 / 0.2)";
                 }
               }}
               onMouseLeave={(e) => {
                 (e.target as HTMLButtonElement).style.opacity = "1";
-                (e.target as HTMLButtonElement).style.transform =
-                  "translateY(0)";
+                (e.target as HTMLButtonElement).style.transform = "translateY(0)";
                 (e.target as HTMLButtonElement).style.boxShadow =
                   "0 2px 8px oklch(0.18 0.06 240 / 0.35), 0 1px 2px oklch(0 0 0 / 0.2)";
               }}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2
-                    style={{ width: "16px", height: "16px" }}
-                    className="animate-spin"
-                  />
+                  <Loader2 style={{ width: "16px", height: "16px" }} className="animate-spin" />
                   Entrando...
                 </>
               ) : (
@@ -347,11 +251,7 @@ export function LoginForm() {
           }}
         >
           <svg
-            style={{
-              width: "13px",
-              height: "13px",
-              color: "oklch(0.65 0.04 230)",
-            }}
+            style={{ width: "13px", height: "13px", color: "oklch(0.65 0.04 230)" }}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

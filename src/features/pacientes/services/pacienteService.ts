@@ -1,5 +1,8 @@
-import { apiFetch } from "./api";
-import type { PacientePage, PacienteListParams } from "@/types/paciente";
+import { apiFetch } from "@/core/api";
+import type {
+  PacientePage,
+  PacienteListParams,
+} from "@/features/pacientes/types/paciente";
 
 export async function listarPacientes(
   token: string,

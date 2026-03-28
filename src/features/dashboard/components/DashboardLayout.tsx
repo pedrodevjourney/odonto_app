@@ -1,11 +1,11 @@
 import { Bell, CircleUser, Loader2, LogOut, PanelLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
+import { AppSidebar } from "@/features/dashboard/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { PageActionsProvider, usePageActions } from "@/contexts/PageActionsContext";
+import { PageActionsProvider, usePageActions } from "@/features/dashboard/contexts/PageActionsContext";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/features/auth/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 function UserMenu() {

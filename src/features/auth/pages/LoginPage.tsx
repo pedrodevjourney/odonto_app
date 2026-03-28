@@ -1,7 +1,7 @@
 import LottieLib from "lottie-react";
 const Lottie = (LottieLib as any).default ?? LottieLib;
 import loginAnimation from "@/assets/animations/login_odonto.json";
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/features/auth/components/LoginForm";
 
 export function LoginPage() {
   return (

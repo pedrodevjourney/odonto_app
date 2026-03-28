@@ -6,7 +6,7 @@
  * corpo de resposta de forma centralizada.
  *
  * Uso:
- *   import { apiFetch } from '@/services/api';
+ *   import { apiFetch } from '@/core/api';
  *   const data = await apiFetch<MinhaInterface>('/endpoint', { method: 'POST', body: ... });
  *
  * Variáveis de ambiente necessárias:
