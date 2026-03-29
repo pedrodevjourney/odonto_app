@@ -38,7 +38,7 @@ function AgendaContent() {
   }, [setActions, vm.openCreateModal]);
 
   return (
-    <div className="space-y-5">
+    <div className="flex h-full flex-col gap-4">
       <div>
         <h1 className="text-2xl text-foreground">Agenda</h1>
         <p className="mt-0.5 text-sm text-muted-foreground/70">
@@ -50,7 +50,6 @@ function AgendaContent() {
         currentDate={vm.currentDate}
         currentView={vm.currentView}
         onViewChange={vm.setCurrentView}
-        onDateChange={vm.setCurrentDate}
         onToday={() => onTodayRef.current?.()}
         onPrev={() => onPrevRef.current?.()}
         onNext={() => onNextRef.current?.()}
@@ -66,7 +65,7 @@ function AgendaContent() {
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative min-h-0 flex-1 overflow-y-auto">
         {vm.loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/70">
             <Loader2 className="size-5 animate-spin text-muted-foreground/40" />

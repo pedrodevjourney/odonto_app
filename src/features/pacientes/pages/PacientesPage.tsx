@@ -102,6 +102,7 @@ export function PacientesPage() {
   }, [setActions]);
 
   return (
+    <div className="h-full overflow-y-auto">
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl text-foreground">Pacientes</h1>
@@ -115,23 +116,23 @@ export function PacientesPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border/40 bg-white shadow-sm shadow-black/4">
-        <div className="flex items-center justify-between gap-4 px-6 py-4">
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+        <div className="flex items-center justify-between gap-4 px-6 py-5">
+          <span className="text-[13px] font-semibold tracking-wide text-foreground/75">
             Lista de Pacientes
           </span>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground/40" />
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
             <input
               type="text"
               placeholder="Buscar por nome..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-8 w-56 rounded-lg border border-border/40 bg-muted/30 pl-8 pr-3 text-sm outline-none transition-all placeholder:text-muted-foreground/40 focus:border-ring/40 focus:bg-white focus:ring-2 focus:ring-ring/10"
+              className="h-9 w-64 rounded-lg border border-border/70 bg-white pl-9 pr-3 text-sm shadow-sm outline-none transition-all placeholder:text-muted-foreground/45 focus:border-ring/60 focus:ring-2 focus:ring-ring/15"
             />
           </div>
         </div>
 
-        <div className="h-px bg-border/30 mx-6" />
+        <div className="h-px bg-border/50 mx-0" />
 
         {loading && (
           <div className="flex items-center justify-center py-24">
@@ -163,17 +164,17 @@ export function PacientesPage() {
         {!loading && !error && pacientes.length > 0 && (
           <table className="w-full text-sm">
             <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+              <tr className="bg-muted/30">
+                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
                   Nome
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
                   Telefone
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
                   Nascimento
                 </th>
-                <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+                <th className="px-6 py-3.5 text-right text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
                   Ações
                 </th>
               </tr>
@@ -221,6 +222,7 @@ export function PacientesPage() {
           </table>
         )}
       </div>
+    </div>
     </div>
   );
 }

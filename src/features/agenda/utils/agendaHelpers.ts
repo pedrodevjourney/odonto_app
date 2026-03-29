@@ -1,6 +1,5 @@
-import { format } from "date-fns";
+import { format, startOfWeek, endOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { startOfWeek, endOfWeek } from "date-fns";
 import type { EventInput } from "@fullcalendar/core";
 import {
   ConsultaStatus,
@@ -9,17 +8,19 @@ import {
 } from "../types/agenda";
 
 const STATUS_COLORS: Record<ConsultaStatus, string> = {
+  [ConsultaStatus.AGENDADA]: "#d97706",
   [ConsultaStatus.CONFIRMADA]: "#16a34a",
-  [ConsultaStatus.PENDENTE]: "#d97706",
+  [ConsultaStatus.REALIZADA]: "#6b7280",
   [ConsultaStatus.CANCELADA]: "#dc2626",
-  [ConsultaStatus.CONCLUIDA]: "#6b7280",
+  [ConsultaStatus.NAO_COMPARECEU]: "#7c3aed",
 };
 
 const STATUS_LABELS: Record<ConsultaStatus, string> = {
+  [ConsultaStatus.AGENDADA]: "Agendada",
   [ConsultaStatus.CONFIRMADA]: "Confirmada",
-  [ConsultaStatus.PENDENTE]: "Pendente",
+  [ConsultaStatus.REALIZADA]: "Realizada",
   [ConsultaStatus.CANCELADA]: "Cancelada",
-  [ConsultaStatus.CONCLUIDA]: "Concluída",
+  [ConsultaStatus.NAO_COMPARECEU]: "Não Compareceu",
 };
 
 export function getStatusColor(status: ConsultaStatus): string {
@@ -57,4 +58,8 @@ export function getWeekRange(date: Date): { start: Date; end: Date } {
     start: startOfWeek(date, { weekStartsOn: 1 }),
     end: endOfWeek(date, { weekStartsOn: 1 }),
   };
+}
+
+export function toLocalDateTimeString(date: Date): string {
+  return format(date, "yyyy-MM-dd'T'HH:mm");
 }

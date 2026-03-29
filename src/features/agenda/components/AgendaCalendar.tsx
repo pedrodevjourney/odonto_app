@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -53,10 +53,59 @@ export function AgendaCalendar({
 
   useEffect(() => {
     const api = calendarRef.current?.getApi();
-    if (api && api.view.type !== currentView) {
+    if (!api) return;
+    if (api.view.type !== currentView) {
       api.changeView(currentView);
     }
   }, [currentView]);
+
+  useEffect(() => {
+    const api = calendarRef.current?.getApi();
+    if (!api) return;
+    const calStart = api.view.activeStart;
+    if (calStart.getTime() !== currentDate.getTime()) {
+      api.gotoDate(currentDate);
+    }
+  }, [currentDate]);
+
+  const todayRef = useRef(new Date());
+
+  const renderDayHeader = useCallback((arg: { date: Date; view: { type: string } }) => {
+    const d = arg.date;
+    const today = todayRef.current;
+    const isToday =
+      d.getDate() === today.getDate() &&
+      d.getMonth() === today.getMonth() &&
+      d.getFullYear() === today.getFullYear();
+
+    const isDay = arg.view.type === "timeGridDay";
+
+    const weekday = d.toLocaleDateString("pt-BR", {
+      weekday: isDay ? "long" : "short",
+    }).replace(".", "").toUpperCase();
+
+    return (
+      <div className="flex flex-col items-center gap-1 py-1">
+        <span
+          className="text-[10px] font-semibold tracking-widest"
+          style={{ color: isToday ? "oklch(0.52 0.14 210)" : "oklch(0.556 0 0 / 70%)" }}
+        >
+          {weekday}
+        </span>
+        <span
+          className="flex size-7 items-center justify-center rounded-full text-sm"
+          style={
+            isToday
+              ? { background: "oklch(0.88 0.06 210)", color: "oklch(0 0 0)", fontWeight: 800 }
+              : { color: "oklch(0.145 0 0)", fontWeight: 400 }
+          }
+        >
+          {d.getDate()}
+        </span>
+      </div>
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleDatesSet(arg: DatesSetArg) {
     if (arg.start.getTime() !== currentDate.getTime()) {
@@ -93,6 +142,7 @@ export function AgendaCalendar({
         eventDrop={onEventDrop}
         datesSet={handleDatesSet}
         eventDisplay="block"
+        dayHeaderContent={renderDayHeader}
         slotLabelFormat={{
           hour: "2-digit",
           minute: "2-digit",

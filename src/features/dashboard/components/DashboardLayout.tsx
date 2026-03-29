@@ -101,9 +101,9 @@ export function DashboardLayout() {
     <SidebarProvider>
       <PageActionsProvider>
         <AppSidebar />
-        <div className="flex min-h-screen flex-1 flex-col overflow-hidden">
+        <div className="flex h-screen flex-1 flex-col overflow-hidden">
           <Topbar />
-          <main className="flex-1 overflow-y-auto bg-[#A8DFF5]/10 p-6">
+          <main className="flex flex-1 flex-col overflow-hidden bg-[#A8DFF5]/10 p-6">
             <Outlet />
           </main>
         </div>

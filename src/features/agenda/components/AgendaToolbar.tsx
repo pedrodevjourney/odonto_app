@@ -29,7 +29,6 @@ interface AgendaToolbarProps {
   currentDate: Date;
   currentView: string;
   onViewChange: (view: string) => void;
-  onDateChange: (date: Date) => void;
   onToday: () => void;
   onPrev: () => void;
   onNext: () => void;

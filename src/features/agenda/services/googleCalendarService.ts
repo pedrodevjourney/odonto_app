@@ -46,7 +46,7 @@ export async function listGoogleEvents(
     `/calendars/primary/events?${params}`,
   );
 
-  return result.items ?? [];
+  return result?.items ?? [];
 }
 
 export async function insertGoogleEvent(
@@ -70,7 +70,7 @@ export async function updateGoogleEvent(
 ): Promise<GoogleCalendarEvent> {
   return googleFetch<GoogleCalendarEvent>(
     accessToken,
-    `/calendars/primary/events/${eventId}`,
+    `/calendars/primary/events/${encodeURIComponent(eventId)}`,
     {
       method: "PATCH",
       body: JSON.stringify(event),
@@ -84,7 +84,7 @@ export async function deleteGoogleEvent(
 ): Promise<void> {
   return googleFetch<void>(
     accessToken,
-    `/calendars/primary/events/${eventId}`,
+    `/calendars/primary/events/${encodeURIComponent(eventId)}`,
     { method: "DELETE" },
   );
 }
@@ -92,16 +92,11 @@ export async function deleteGoogleEvent(
 export function mapConsultaToGoogleEvent(
   consulta: Consulta,
 ): Omit<GoogleCalendarEvent, "id"> {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return {
     summary: `${consulta.pacienteNome} — ${TIPO_PROCEDIMENTO_LABELS[consulta.tipo]}`,
     description: consulta.observacoes ?? undefined,
-    start: {
-      dateTime: consulta.dataHoraInicio,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    end: {
-      dateTime: consulta.dataHoraFim,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
+    start: { dateTime: consulta.dataHoraInicio, timeZone },
+    end: { dateTime: consulta.dataHoraFim, timeZone },
   };
 }

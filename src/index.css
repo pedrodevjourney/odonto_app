@@ -1,8 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/dm-sans";
-@import "@fontsource/dm-serif-display";
+@import "@fontsource-variable/open-sans";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,8 +77,8 @@
 }
 
 @theme inline {
-    --font-sans: 'DM Sans Variable', sans-serif;
-    --font-serif: 'DM Serif Display', serif;
+    --font-sans: 'Open Sans Variable', sans-serif;
+    --font-serif: 'Open Sans Variable', sans-serif;
     --color-sidebar-hover-foreground: var(--sidebar-hover-foreground);
     --color-sidebar-hover: var(--sidebar-hover);
     --color-sidebar-ring: var(--sidebar-ring);
@@ -180,12 +179,6 @@ input[type="datetime-local"].dt-empty:not(:focus)::-webkit-datetime-edit {
   }
 
   .fc .fc-col-header-cell {
-    padding: 0.625rem 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: oklch(0.556 0 0);
     background: oklch(0.97 0 0 / 50%);
   }
 
@@ -234,8 +227,8 @@ input[type="datetime-local"].dt-empty:not(:focus)::-webkit-datetime-edit {
   }
 
   .fc .fc-day-today .fc-col-header-cell-cushion {
-    color: oklch(0.88 0.06 210);
-    font-weight: 700;
+    color: oklch(0.52 0.14 210) !important;
+    font-weight: 800 !important;
   }
 
   .fc .fc-highlight {

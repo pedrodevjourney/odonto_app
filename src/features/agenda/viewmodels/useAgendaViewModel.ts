@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import type { DateSelectArg, EventClickArg, EventDropArg } from "@fullcalendar/core";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type {
+  DateSelectArg,
+  EventClickArg,
+  EventDropArg,
+} from "@fullcalendar/core";
 import type { EventInput } from "@fullcalendar/core";
 import { format, addHours } from "date-fns";
 import { toast } from "sonner";
@@ -18,7 +22,11 @@ import {
   mapConsultaToGoogleEvent,
 } from "../services/googleCalendarService";
 import type { Consulta, ConsultaFormData } from "../types/agenda";
-import { consultaToCalendarEvent, getWeekRange } from "../utils/agendaHelpers";
+import {
+  consultaToCalendarEvent,
+  getWeekRange,
+  toLocalDateTimeString,
+} from "../utils/agendaHelpers";
 
 type ModalMode = "create" | "edit";
 
@@ -46,10 +54,6 @@ export interface AgendaViewModel {
   refetch: () => void;
 }
 
-function toLocalDateTimeString(date: Date): string {
-  return format(date, "yyyy-MM-dd'T'HH:mm");
-}
-
 export function useAgendaViewModel(): AgendaViewModel {
   const { user } = useAuth();
   const google = useOptionalGoogleCalendar();
@@ -57,8 +61,11 @@ export function useAgendaViewModel(): AgendaViewModel {
   const [consultas, setConsultas] = useState<Consulta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(
+    () => getWeekRange(new Date()).start,
+  );
   const [currentView, setCurrentView] = useState("timeGridWeek");
+  const currentDateRef = useRef(currentDate);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>("create");
@@ -68,31 +75,39 @@ export function useAgendaViewModel(): AgendaViewModel {
   const [defaultStart, setDefaultStart] = useState("");
   const [defaultEnd, setDefaultEnd] = useState("");
 
-  const fetchConsultas = useCallback(async () => {
-    if (!user?.token) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const { start, end } = getWeekRange(currentDate);
-      const result = await listarConsultas(user.token, {
-        dataInicio: format(start, "yyyy-MM-dd"),
-        dataFim: format(end, "yyyy-MM-dd"),
-      });
-      setConsultas(result);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao carregar consultas.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token, currentDate]);
+  currentDateRef.current = currentDate;
+
+  const fetchConsultas = useCallback(
+    async (forDate?: Date) => {
+      if (!user?.token) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const { start, end } = getWeekRange(forDate ?? currentDateRef.current);
+        const result = await listarConsultas(user.token, {
+          dataInicio: format(start, "yyyy-MM-dd"),
+          dataFim: format(end, "yyyy-MM-dd"),
+        });
+        setConsultas(result);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Erro ao carregar consultas.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.token],
+  );
 
   useEffect(() => {
     fetchConsultas();
-  }, [fetchConsultas]);
+  }, [fetchConsultas, currentDate]);
 
-  const events: EventInput[] = consultas.map(consultaToCalendarEvent);
+  const events: EventInput[] = useMemo(
+    () => consultas.map(consultaToCalendarEvent),
+    [consultas],
+  );
 
   const openCreateModal = useCallback((start?: Date, end?: Date) => {
     const now = start ?? new Date();
@@ -156,17 +171,26 @@ export function useAgendaViewModel(): AgendaViewModel {
   );
 
   const syncToGoogle = useCallback(
-    async (consulta: Consulta) => {
-      if (!google?.isConnected || !google.accessToken) return;
+    async (consulta: Consulta): Promise<string | undefined> => {
+      if (!google?.isConnected || !google.accessToken) return undefined;
       try {
         const event = mapConsultaToGoogleEvent(consulta);
         if (consulta.googleEventId) {
-          await updateGoogleEvent(google.accessToken, consulta.googleEventId, event);
+          await updateGoogleEvent(
+            google.accessToken,
+            consulta.googleEventId,
+            event,
+          );
+          return consulta.googleEventId;
         } else {
-          await insertGoogleEvent(google.accessToken, event);
+          const created = await insertGoogleEvent(google.accessToken, event);
+          return created.id;
         }
       } catch {
-        // Google sync is best-effort — don't block the main flow
+        toast.warning(
+          "Consulta salva, mas não foi possível sincronizar com o Google Agenda.",
+        );
+        return undefined;
       }
     },
     [google?.isConnected, google?.accessToken],
@@ -178,22 +202,49 @@ export function useAgendaViewModel(): AgendaViewModel {
       try {
         let result: Consulta;
         if (modalMode === "edit" && selectedConsulta) {
-          result = await atualizarConsulta(user.token, selectedConsulta.id, data);
+          result = await atualizarConsulta(
+            user.token,
+            selectedConsulta.id,
+            data,
+          );
           toast.success("Consulta atualizada com sucesso!");
         } else {
           result = await criarConsulta(user.token, data);
           toast.success("Consulta criada com sucesso!");
         }
-        syncToGoogle(result);
+
+        const googleEventId = await syncToGoogle(result);
+        if (googleEventId && !result.googleEventId) {
+          atualizarConsulta(user.token, result.id, { googleEventId }).catch(
+            (err) => {
+              console.warn("Falha ao persistir googleEventId:", err);
+            },
+          );
+        }
+
         closeModal();
-        fetchConsultas();
+        const consultaWeekStart = getWeekRange(
+          new Date(result.dataHoraInicio),
+        ).start;
+        if (consultaWeekStart.getTime() !== currentDateRef.current.getTime()) {
+          setCurrentDate(consultaWeekStart);
+        } else {
+          fetchConsultas();
+        }
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Erro ao salvar consulta.",
         );
       }
     },
-    [user?.token, modalMode, selectedConsulta, closeModal, fetchConsultas, syncToGoogle],
+    [
+      user?.token,
+      modalMode,
+      selectedConsulta,
+      closeModal,
+      fetchConsultas,
+      syncToGoogle,
+    ],
   );
 
   const handleCancel = useCallback(
@@ -201,10 +252,15 @@ export function useAgendaViewModel(): AgendaViewModel {
       if (!user?.token) return;
       try {
         await cancelarConsulta(user.token, id);
-        // Remove from Google Calendar if synced
         const consulta = consultas.find((c) => c.id === id);
-        if (consulta?.googleEventId && google?.isConnected && google.accessToken) {
-          deleteGoogleEvent(google.accessToken, consulta.googleEventId).catch(() => {});
+        if (
+          consulta?.googleEventId &&
+          google?.isConnected &&
+          google.accessToken
+        ) {
+          deleteGoogleEvent(google.accessToken, consulta.googleEventId).catch(
+            () => {},
+          );
         }
         toast.success("Consulta cancelada.");
         closeModal();
@@ -213,7 +269,14 @@ export function useAgendaViewModel(): AgendaViewModel {
         toast.error("Erro ao cancelar consulta.");
       }
     },
-    [user?.token, closeModal, fetchConsultas, consultas, google?.isConnected, google?.accessToken],
+    [
+      user?.token,
+      closeModal,
+      fetchConsultas,
+      consultas,
+      google?.isConnected,
+      google?.accessToken,
+    ],
   );
 
   return {

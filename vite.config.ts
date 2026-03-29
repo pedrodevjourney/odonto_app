@@ -23,6 +23,10 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+      "/pacientes": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
       "/profissionais": {
         target: "http://localhost:8080",
         changeOrigin: true,

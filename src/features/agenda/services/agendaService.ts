@@ -63,4 +63,3 @@ export async function cancelarConsulta(
     headers: { Authorization: `Bearer ${token}` },
   });
 }
-

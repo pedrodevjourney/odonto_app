@@ -22,7 +22,7 @@ const STORAGE_KEY = "odonto_google_token";
 
 export function GoogleCalendarProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(() =>
-    localStorage.getItem(STORAGE_KEY),
+    sessionStorage.getItem(STORAGE_KEY),
   );
 
   const login = useGoogleLogin({
@@ -30,7 +30,7 @@ export function GoogleCalendarProvider({ children }: { children: ReactNode }) {
     onSuccess: (tokenResponse) => {
       const token = tokenResponse.access_token;
       setAccessToken(token);
-      localStorage.setItem(STORAGE_KEY, token);
+      sessionStorage.setItem(STORAGE_KEY, token);
     },
   });
 
@@ -40,12 +40,14 @@ export function GoogleCalendarProvider({ children }: { children: ReactNode }) {
 
   const disconnect = useCallback(() => {
     if (accessToken) {
-      fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, {
+      fetch("https://oauth2.googleapis.com/revoke", {
         method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `token=${encodeURIComponent(accessToken)}`,
       }).catch(() => {});
     }
     setAccessToken(null);
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
   }, [accessToken]);
 
   return (

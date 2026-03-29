@@ -8,23 +8,35 @@ import type { Paciente } from "@/features/pacientes/types/paciente";
 import type { ConsultaFormData } from "../types/agenda";
 import { ConsultaStatus, TipoProcedimento } from "../types/agenda";
 
-const consultaSchema = z.object({
-  pacienteId: z.number({ error: "Selecione um paciente" }),
-  dataHoraInicio: z.string().min(1, "Informe a data e hora de início"),
-  dataHoraFim: z.string().min(1, "Informe a data e hora de fim"),
-  tipo: z.enum(Object.values(TipoProcedimento) as [string, ...string[]], {
-    error: "Selecione o tipo de procedimento",
-  }),
-  observacoes: z.string().optional(),
-  status: z
-    .enum([
-      ConsultaStatus.PENDENTE,
-      ConsultaStatus.CONFIRMADA,
-      ConsultaStatus.CANCELADA,
-      ConsultaStatus.CONCLUIDA,
-    ])
-    .optional(),
-});
+const consultaSchema = z
+  .object({
+    pacienteId: z.number({ error: "Selecione um paciente" }),
+    dataHoraInicio: z.string().min(1, "Informe a data e hora de início"),
+    dataHoraFim: z.string().min(1, "Informe a data e hora de fim"),
+    tipo: z.enum(Object.values(TipoProcedimento) as [string, ...string[]], {
+      error: "Selecione o tipo de procedimento",
+    }),
+    observacoes: z.string().optional(),
+    status: z
+      .enum([
+        ConsultaStatus.AGENDADA,
+        ConsultaStatus.CONFIRMADA,
+        ConsultaStatus.REALIZADA,
+        ConsultaStatus.CANCELADA,
+        ConsultaStatus.NAO_COMPARECEU,
+      ])
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      !data.dataHoraInicio ||
+      !data.dataHoraFim ||
+      data.dataHoraFim > data.dataHoraInicio,
+    {
+      message: "O horário de fim deve ser após o início",
+      path: ["dataHoraFim"],
+    },
+  );
 
 type ConsultaSchemaType = z.infer<typeof consultaSchema>;
 
@@ -41,18 +53,26 @@ export function useAppointmentFormViewModel({
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
+  const buildDefaultValues = (data?: Partial<ConsultaFormData>): ConsultaSchemaType => ({
+    pacienteId: data?.pacienteId ?? undefined,
+    dataHoraInicio: data?.dataHoraInicio ?? "",
+    dataHoraFim: data?.dataHoraFim ?? "",
+    tipo: data?.tipo ?? undefined,
+    observacoes: data?.observacoes ?? "",
+    status: data?.status ?? undefined,
+  });
+
   const form = useForm<ConsultaSchemaType>({
     resolver: zodResolver(consultaSchema),
     mode: "onBlur",
-    defaultValues: {
-      pacienteId: initialData?.pacienteId ?? undefined,
-      dataHoraInicio: initialData?.dataHoraInicio ?? "",
-      dataHoraFim: initialData?.dataHoraFim ?? "",
-      tipo: initialData?.tipo ?? undefined,
-      observacoes: initialData?.observacoes ?? "",
-      status: initialData?.status ?? undefined,
-    },
+    defaultValues: buildDefaultValues(initialData),
   });
+
+  // Reset form whenever the modal reopens with new data
+  useEffect(() => {
+    form.reset(buildDefaultValues(initialData));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData?.pacienteId, initialData?.dataHoraInicio, initialData?.dataHoraFim]);
 
   const fetchOptions = useCallback(async () => {
     if (!user?.token) return;

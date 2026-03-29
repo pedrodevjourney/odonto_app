@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,47 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useAppointmentFormViewModel } from "../viewmodels/useAppointmentFormViewModel";
-
-function DateTimeInput({
-  value,
-  onChange,
-  onBlur,
-  name,
-  id,
-}: React.ComponentProps<"input">) {
-  const [focused, setFocused] = useState(false);
-  const isEmpty = !value || value === "";
-
-  return (
-    <div className="relative">
-      <Input
-        type="datetime-local"
-        value={value}
-        onChange={onChange}
-        onBlur={(e) => {
-          setFocused(false);
-          onBlur?.(e);
-        }}
-        onFocus={() => setFocused(true)}
-        name={name}
-        id={id}
-        className={cn(isEmpty && !focused && "dt-empty")}
-      />
-      {isEmpty && !focused && (
-        <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-          Selecione data e hora
-        </span>
-      )}
-    </div>
-  );
-}
 import { StatusBadge } from "./StatusBadge";
+import { DateTimeInput } from "./DateTimeInput";
+import { useAppointmentFormViewModel } from "../viewmodels/useAppointmentFormViewModel";
 import type { Consulta, ConsultaFormData } from "../types/agenda";
 import {
   ConsultaStatus,
@@ -143,7 +107,11 @@ export function AppointmentModal({
                         disabled={loadingOptions}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Selecione o paciente" />
+                          <SelectValue placeholder="Selecione o paciente">
+                            {field.value
+                              ? (pacientes.find((p) => p.id === field.value)?.nome ?? "")
+                              : undefined}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {pacientes.map((p) => (
@@ -171,7 +139,11 @@ export function AppointmentModal({
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Selecione o procedimento" />
+                          <SelectValue placeholder="Selecione o procedimento">
+                            {field.value
+                              ? (TIPO_PROCEDIMENTO_LABELS[field.value as TipoProcedimento] ?? field.value)
+                              : undefined}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {Object.values(TipoProcedimento).map((tipo) => (
@@ -228,20 +200,29 @@ export function AppointmentModal({
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue />
+                            <SelectValue>
+                              {field.value === ConsultaStatus.AGENDADA && "Agendada"}
+                              {field.value === ConsultaStatus.CONFIRMADA && "Confirmada"}
+                              {field.value === ConsultaStatus.REALIZADA && "Realizada"}
+                              {field.value === ConsultaStatus.CANCELADA && "Cancelada"}
+                              {field.value === ConsultaStatus.NAO_COMPARECEU && "Não Compareceu"}
+                            </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={ConsultaStatus.PENDENTE}>
-                              Pendente
+                            <SelectItem value={ConsultaStatus.AGENDADA}>
+                              Agendada
                             </SelectItem>
                             <SelectItem value={ConsultaStatus.CONFIRMADA}>
                               Confirmada
                             </SelectItem>
-                            <SelectItem value={ConsultaStatus.CONCLUIDA}>
-                              Concluída
+                            <SelectItem value={ConsultaStatus.REALIZADA}>
+                              Realizada
                             </SelectItem>
                             <SelectItem value={ConsultaStatus.CANCELADA}>
                               Cancelada
+                            </SelectItem>
+                            <SelectItem value={ConsultaStatus.NAO_COMPARECEU}>
+                              Não Compareceu
                             </SelectItem>
                           </SelectContent>
                         </Select>

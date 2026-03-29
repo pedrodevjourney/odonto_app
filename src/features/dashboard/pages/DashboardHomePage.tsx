@@ -1,5 +1,6 @@
 export function DashboardHomePage() {
   return (
+    <div className="h-full overflow-y-auto">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl text-foreground">Visão Geral</h1>
@@ -7,6 +8,7 @@ export function DashboardHomePage() {
           Bem-vindo ao painel da Borges Odontologia.
         </p>
       </div>
+    </div>
     </div>
   );
 }

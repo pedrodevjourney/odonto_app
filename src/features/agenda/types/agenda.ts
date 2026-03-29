@@ -28,10 +28,11 @@ export const TIPO_PROCEDIMENTO_LABELS: Record<TipoProcedimento, string> = {
 };
 
 export const ConsultaStatus = {
-  PENDENTE: "PENDENTE",
+  AGENDADA: "AGENDADA",
   CONFIRMADA: "CONFIRMADA",
+  REALIZADA: "REALIZADA",
   CANCELADA: "CANCELADA",
-  CONCLUIDA: "CONCLUIDA",
+  NAO_COMPARECEU: "NAO_COMPARECEU",
 } as const;
 
 export type ConsultaStatus =
@@ -58,6 +59,7 @@ export interface ConsultaFormData {
   observacoes?: string;
   tipo: TipoProcedimento;
   status?: ConsultaStatus;
+  googleEventId?: string;
 }
 
 export interface ConsultaListParams {
