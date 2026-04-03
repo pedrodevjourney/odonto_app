@@ -1,5 +1,7 @@
 import { apiFetch } from "@/core/api";
 import type {
+  Paciente,
+  PacienteFormData,
   PacientePage,
   PacienteListParams,
 } from "@/features/pacientes/types/paciente";
@@ -17,6 +19,17 @@ export async function listarPacientes(
   if (nome?.trim()) query.set("nome", nome.trim());
 
   return apiFetch<PacientePage>(`/pacientes?${query}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function cadastrarPaciente(
+  token: string,
+  data: PacienteFormData,
+): Promise<Paciente> {
+  return apiFetch<Paciente>("/pacientes", {
+    method: "POST",
+    body: JSON.stringify(data),
     headers: { Authorization: `Bearer ${token}` },
   });
 }

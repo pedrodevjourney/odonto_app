@@ -15,6 +15,7 @@ export interface PacientesViewModel {
   openActionId: number | null;
   setOpenActionId: (id: number | null) => void;
   retry: () => void;
+  refresh: () => void;
 }
 
 export function usePacientesViewModel(): PacientesViewModel {
@@ -55,6 +56,8 @@ export function usePacientesViewModel(): PacientesViewModel {
     fetchPacientes(debouncedSearch || undefined);
   }, [fetchPacientes, debouncedSearch]);
 
+  const reloadList = () => fetchPacientes(debouncedSearch || undefined);
+
   return {
     pacientes: pageData?.content ?? [],
     loading,
@@ -63,6 +66,7 @@ export function usePacientesViewModel(): PacientesViewModel {
     setSearch,
     openActionId,
     setOpenActionId,
-    retry: () => fetchPacientes(debouncedSearch || undefined),
+    retry: reloadList,
+    refresh: reloadList,
   };
 }

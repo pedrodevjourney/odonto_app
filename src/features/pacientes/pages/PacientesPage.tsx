@@ -7,13 +7,17 @@ import {
   Trash2,
   UserPlus,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { usePageActions } from "@/features/dashboard/contexts/PageActionsContext";
 import { usePacientesViewModel } from "@/features/pacientes/viewmodels/usePacientesViewModel";
+import { CadastroPacienteModal } from "@/features/pacientes/components/CadastroPacienteModal";
 import type { Paciente } from "@/features/pacientes/types/paciente";
 import { cn } from "@/lib/utils";
-import { getInitials, formatDate } from "@/features/pacientes/utils/pacienteHelpers";
+import {
+  getInitials,
+  formatDate,
+} from "@/features/pacientes/utils/pacienteHelpers";
 
 type RowActionsProps = {
   paciente: Paciente;
@@ -80,6 +84,7 @@ function RowActions({
 
 export function PacientesPage() {
   const { setActions } = usePageActions();
+  const [modalOpen, setModalOpen] = useState(false);
   const {
     pacientes,
     loading,
@@ -89,11 +94,15 @@ export function PacientesPage() {
     openActionId,
     setOpenActionId,
     retry,
+    refresh,
   } = usePacientesViewModel();
 
   useEffect(() => {
     setActions(
-      <Button className="h-9 gap-2 rounded-lg px-5 text-[13px] font-semibold tracking-wide shadow-sm">
+      <Button
+        onClick={() => setModalOpen(true)}
+        className="h-9 gap-2 rounded-lg px-5 text-[13px] font-semibold tracking-wide shadow-sm"
+      >
         <UserPlus className="size-[15px]" />
         Novo Paciente
       </Button>,
@@ -102,127 +111,136 @@ export function PacientesPage() {
   }, [setActions]);
 
   return (
-    <div className="h-full overflow-y-auto">
-    <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl text-foreground">Pacientes</h1>
-        {!loading && !error && (
-          <p className="mt-0.5 text-sm text-muted-foreground/70">
-            {pacientes.length} paciente{pacientes.length !== 1 ? "s" : ""}{" "}
-            cadastrado
-            {pacientes.length !== 1 ? "s" : ""}
-          </p>
-        )}
-      </div>
+    <>
+      <CadastroPacienteModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={() => {
+          setModalOpen(false);
+          refresh();
+        }}
+      />
+      <div className="h-full overflow-y-auto">
+        <div className="space-y-5">
+          <div>
+            <h1 className="text-2xl text-foreground">Pacientes</h1>
+            {!loading && !error && (
+              <p className="mt-0.5 text-sm text-muted-foreground/70">
+                {pacientes.length} paciente{pacientes.length !== 1 ? "s" : ""}{" "}
+                cadastrado
+                {pacientes.length !== 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border/40 bg-white shadow-sm shadow-black/4">
-        <div className="flex items-center justify-between gap-4 px-6 py-5">
-          <span className="text-[13px] font-semibold tracking-wide text-foreground/75">
-            Lista de Pacientes
-          </span>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
-            <input
-              type="text"
-              placeholder="Buscar por nome..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-9 w-64 rounded-lg border border-border/70 bg-white pl-9 pr-3 text-sm shadow-sm outline-none transition-all placeholder:text-muted-foreground/45 focus:border-ring/60 focus:ring-2 focus:ring-ring/15"
-            />
+          <div className="overflow-hidden rounded-2xl border border-border/40 bg-white shadow-sm shadow-black/4">
+            <div className="flex items-center justify-between gap-4 px-6 py-5">
+              <span className="text-[13px] font-semibold tracking-wide text-foreground/75">
+                Lista de Pacientes
+              </span>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/50" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nome..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="h-9 w-64 rounded-lg border border-border/70 bg-white pl-9 pr-3 text-sm shadow-sm outline-none transition-all placeholder:text-muted-foreground/45 focus:border-ring/60 focus:ring-2 focus:ring-ring/15"
+                />
+              </div>
+            </div>
+
+            <div className="h-px bg-border/50 mx-0" />
+
+            {loading && (
+              <div className="flex items-center justify-center py-24">
+                <Loader2 className="size-5 animate-spin text-muted-foreground/30" />
+              </div>
+            )}
+
+            {!loading && error && (
+              <div className="flex flex-col items-center gap-3 py-24 text-center">
+                <p className="text-sm text-muted-foreground/60">{error}</p>
+                <Button variant="outline" size="sm" onClick={retry}>
+                  Tentar novamente
+                </Button>
+              </div>
+            )}
+
+            {!loading && !error && pacientes.length === 0 && (
+              <div className="flex flex-col items-center gap-1.5 py-24 text-center">
+                <p className="text-sm font-medium text-foreground/70">
+                  Nenhum paciente encontrado
+                </p>
+                <p className="text-xs text-muted-foreground/50">
+                  Cadastre o primeiro paciente clicando em "Novo Paciente".
+                </p>
+              </div>
+            )}
+
+            {!loading && !error && pacientes.length > 0 && (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-muted/30">
+                    <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
+                      Nome
+                    </th>
+                    <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
+                      Telefone
+                    </th>
+                    <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
+                      Nascimento
+                    </th>
+                    <th className="px-6 py-3.5 text-right text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pacientes.map((paciente, index) => (
+                    <tr
+                      key={paciente.id}
+                      className={cn(
+                        "group transition-colors duration-100 hover:bg-muted/20",
+                        index !== 0 && "border-t border-border/20",
+                      )}
+                    >
+                      <td className="px-6 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#a0b6cb]/15 text-[11px] font-semibold text-[#7a9ab5]">
+                            {getInitials(paciente.nome)}
+                          </div>
+                          <span className="text-sm font-medium text-foreground/85">
+                            {paciente.nome}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3.5 text-sm text-muted-foreground/60">
+                        {paciente.telefone ?? "—"}
+                      </td>
+                      <td className="px-6 py-3.5 text-sm text-muted-foreground/60">
+                        {formatDate(paciente.dataNascimento)}
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <RowActions
+                          paciente={paciente}
+                          open={openActionId === paciente.id}
+                          onToggle={() =>
+                            setOpenActionId(
+                              openActionId === paciente.id ? null : paciente.id,
+                            )
+                          }
+                          onClose={() => setOpenActionId(null)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
-
-        <div className="h-px bg-border/50 mx-0" />
-
-        {loading && (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="size-5 animate-spin text-muted-foreground/30" />
-          </div>
-        )}
-
-        {!loading && error && (
-          <div className="flex flex-col items-center gap-3 py-24 text-center">
-            <p className="text-sm text-muted-foreground/60">{error}</p>
-            <Button variant="outline" size="sm" onClick={retry}>
-              Tentar novamente
-            </Button>
-          </div>
-        )}
-
-        {/* Empty */}
-        {!loading && !error && pacientes.length === 0 && (
-          <div className="flex flex-col items-center gap-1.5 py-24 text-center">
-            <p className="text-sm font-medium text-foreground/70">
-              Nenhum paciente encontrado
-            </p>
-            <p className="text-xs text-muted-foreground/50">
-              Cadastre o primeiro paciente clicando em "Novo Paciente".
-            </p>
-          </div>
-        )}
-
-        {!loading && !error && pacientes.length > 0 && (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-muted/30">
-                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
-                  Nome
-                </th>
-                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
-                  Telefone
-                </th>
-                <th className="px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
-                  Nascimento
-                </th>
-                <th className="px-6 py-3.5 text-right text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/65">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {pacientes.map((paciente, index) => (
-                <tr
-                  key={paciente.id}
-                  className={cn(
-                    "group transition-colors duration-100 hover:bg-muted/20",
-                    index !== 0 && "border-t border-border/20",
-                  )}
-                >
-                  <td className="px-6 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#a0b6cb]/15 text-[11px] font-semibold text-[#7a9ab5]">
-                        {getInitials(paciente.nome)}
-                      </div>
-                      <span className="text-sm font-medium text-foreground/85">
-                        {paciente.nome}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3.5 text-sm text-muted-foreground/60">
-                    {paciente.telefone ?? "—"}
-                  </td>
-                  <td className="px-6 py-3.5 text-sm text-muted-foreground/60">
-                    {formatDate(paciente.dataNascimento)}
-                  </td>
-                  <td className="px-6 py-3.5">
-                    <RowActions
-                      paciente={paciente}
-                      open={openActionId === paciente.id}
-                      onToggle={() =>
-                        setOpenActionId(
-                          openActionId === paciente.id ? null : paciente.id,
-                        )
-                      }
-                      onClose={() => setOpenActionId(null)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
       </div>
-    </div>
-    </div>
+    </>
   );
 }
