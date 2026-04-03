@@ -33,3 +33,13 @@ export async function cadastrarPaciente(
     headers: { Authorization: `Bearer ${token}` },
   });
 }
+
+export async function excluirPaciente(
+  token: string,
+  id: number,
+): Promise<void> {
+  return apiFetch<void>(`/pacientes/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}

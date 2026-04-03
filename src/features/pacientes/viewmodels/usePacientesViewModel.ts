@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
-import { listarPacientes } from "@/features/pacientes/services/pacienteService";
+import {
+  listarPacientes,
+  excluirPaciente,
+} from "@/features/pacientes/services/pacienteService";
 import type {
   Paciente,
   PacientePage,
@@ -16,6 +20,7 @@ export interface PacientesViewModel {
   setOpenActionId: (id: number | null) => void;
   retry: () => void;
   refresh: () => void;
+  handleExcluir: (id: number) => Promise<void>;
 }
 
 export function usePacientesViewModel(): PacientesViewModel {
@@ -58,6 +63,19 @@ export function usePacientesViewModel(): PacientesViewModel {
 
   const reloadList = () => fetchPacientes(debouncedSearch || undefined);
 
+  async function handleExcluir(id: number) {
+    if (!user?.token) return;
+    try {
+      await excluirPaciente(user.token, id);
+      toast.success("Paciente excluído com sucesso.");
+      reloadList();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao excluir paciente.",
+      );
+    }
+  }
+
   return {
     pacientes: pageData?.content ?? [],
     loading,
@@ -68,5 +86,6 @@ export function usePacientesViewModel(): PacientesViewModel {
     setOpenActionId,
     retry: reloadList,
     refresh: reloadList,
+    handleExcluir,
   };
 }
