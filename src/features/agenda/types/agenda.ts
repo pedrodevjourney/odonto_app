@@ -77,3 +77,5 @@ export interface GoogleCalendarEvent {
   colorId?: string;
   htmlLink?: string;
 }
+
+export type ModalMode = "create" | "edit";

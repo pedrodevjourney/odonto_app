@@ -96,6 +96,7 @@ function AgendaContent() {
         defaultEnd={vm.defaultEnd}
         onSubmit={vm.handleCreateOrUpdate}
         onCancel={vm.handleCancel}
+        onDelete={vm.handleDelete}
       />
     </div>
   );

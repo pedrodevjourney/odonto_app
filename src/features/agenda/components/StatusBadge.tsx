@@ -1,16 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ConsultaStatus } from "../types/agenda";
-import { getStatusLabel } from "../utils/agendaHelpers";
-
-const STATUS_STYLES: Record<ConsultaStatus, string> = {
-  [ConsultaStatus.AGENDADA]: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  [ConsultaStatus.CONFIRMADA]:
-    "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  [ConsultaStatus.REALIZADA]: "bg-gray-50 text-gray-600 ring-gray-500/20",
-  [ConsultaStatus.CANCELADA]: "bg-red-50 text-red-700 ring-red-600/20",
-  [ConsultaStatus.NAO_COMPARECEU]:
-    "bg-purple-50 text-purple-700 ring-purple-600/20",
-};
+import { getStatusLabel, getStatusBadgeStyle } from "../constants/statusConfig";
 
 interface StatusBadgeProps {
   status: ConsultaStatus;
@@ -22,7 +12,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
-        STATUS_STYLES[status],
+        getStatusBadgeStyle(status),
         className,
       )}
     >

@@ -63,3 +63,13 @@ export async function cancelarConsulta(
     headers: { Authorization: `Bearer ${token}` },
   });
 }
+
+export async function excluirConsulta(
+  token: string,
+  id: number,
+): Promise<void> {
+  return apiFetch<void>(`/consultas/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}

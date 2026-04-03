@@ -193,29 +193,31 @@ input[type="datetime-local"].dt-empty:not(:focus)::-webkit-datetime-edit {
   }
 
   .fc .fc-event {
-    border-radius: 0.5rem;
-    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+    padding: 0;
     font-size: 0.75rem;
-    font-weight: 500;
-    border: none;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+    border: none !important;
+    background: transparent !important;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
     cursor: pointer;
     transition: box-shadow 0.15s, transform 0.15s;
+    overflow: hidden;
   }
 
   .fc .fc-event:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 16%);
     transform: translateY(-1px);
   }
 
-  .fc .fc-event .fc-event-time {
-    font-size: 0.65rem;
-    font-weight: 600;
-    opacity: 0.85;
+  .fc .fc-event .fc-event-main {
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
   }
 
+  .fc .fc-event .fc-event-time,
   .fc .fc-event .fc-event-title {
-    font-weight: 500;
+    display: none;
   }
 
   .fc .fc-timegrid-now-indicator-line {
