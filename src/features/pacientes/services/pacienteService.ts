@@ -34,6 +34,15 @@ export async function cadastrarPaciente(
   });
 }
 
+export async function buscarPaciente(
+  token: string,
+  id: number,
+): Promise<Paciente> {
+  return apiFetch<Paciente>(`/pacientes/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function excluirPaciente(
   token: string,
   id: number,

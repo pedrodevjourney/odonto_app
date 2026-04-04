@@ -5,6 +5,7 @@ import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { DashboardHomePage } from "@/features/dashboard/pages/DashboardHomePage";
 import { AgendaPage } from "@/features/agenda/pages/AgendaPage";
 import { PacientesPage } from "@/features/pacientes/pages/PacientesPage";
+import { ProntuarioPage } from "@/features/pacientes/pages/ProntuarioPage";
 import { PagamentosPage } from "@/features/pagamentos/pages/PagamentosPage";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHomePage />} />
             <Route path="pacientes" element={<PacientesPage />} />
+            <Route path="pacientes/:id" element={<ProntuarioPage />} />
             <Route path="agenda" element={<AgendaPage />} />
             <Route path="pagamentos" element={<PagamentosPage />} />
           </Route>

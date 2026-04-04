@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,20 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { DatePickerField } from "@/features/pacientes/components/DatePickerField";
 import { Button } from "@/components/ui/button";
 import { useCadastroPacienteViewModel } from "@/features/pacientes/viewmodels/useCadastroPacienteViewModel";
-import {
-  maskPhone,
-  formatDate,
-} from "@/features/pacientes/utils/pacienteHelpers";
-import { cn } from "@/lib/utils";
+import { maskPhone } from "@/features/pacientes/utils/pacienteHelpers";
 
 const ESTADO_CIVIL_LABELS: Record<string, string> = {
   SOLTEIRO: "Solteiro(a)",
@@ -54,56 +44,6 @@ interface CadastroPacienteModalProps {
   onSuccess: () => void;
 }
 
-function toDate(value?: string): Date | undefined {
-  if (!value) return undefined;
-  return new Date(value + "T00:00:00");
-}
-
-function toDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function DatePicker({
-  value,
-  onChange,
-  placeholder = "Selecione uma data",
-}: {
-  value?: string;
-  onChange: (v: string | undefined) => void;
-  placeholder?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const selected = toDate(value);
-
-  return (
-    <Popover open={open} onOpenChange={(o) => setOpen(o)}>
-      <PopoverTrigger
-        className={cn(
-          "flex h-9 w-full items-center gap-2 rounded-md border border-input bg-background px-3 text-left text-sm shadow-sm transition-colors",
-          "hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          !value && "text-muted-foreground",
-        )}
-      >
-        <CalendarIcon className="size-4 shrink-0 text-muted-foreground/60" />
-        {value ? formatDate(value) : placeholder}
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          selected={selected}
-          defaultMonth={selected}
-          onSelect={(date) => {
-            onChange(date ? toDateString(date) : undefined);
-            setOpen(false);
-          }}
-        />
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -193,7 +133,7 @@ export function CadastroPacienteModal({
                     <FormItem>
                       <FormLabel>Data de Nascimento</FormLabel>
                       <FormControl>
-                        <DatePicker
+                        <DatePickerField
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Selecione a data"
@@ -404,7 +344,7 @@ export function CadastroPacienteModal({
                     <FormItem>
                       <FormLabel>Início do Tratamento</FormLabel>
                       <FormControl>
-                        <DatePicker
+                        <DatePickerField
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Selecione a data"
@@ -422,7 +362,7 @@ export function CadastroPacienteModal({
                     <FormItem>
                       <FormLabel>Término do Tratamento</FormLabel>
                       <FormControl>
-                        <DatePicker
+                        <DatePickerField
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Selecione a data"
@@ -440,7 +380,7 @@ export function CadastroPacienteModal({
                     <FormItem>
                       <FormLabel>Interrupção do Tratamento</FormLabel>
                       <FormControl>
-                        <DatePicker
+                        <DatePickerField
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Selecione a data"

@@ -1,3 +1,29 @@
+export function toDate(value?: string): Date | undefined {
+  if (!value) return undefined;
+  return new Date(value + "T00:00:00");
+}
+
+export function toDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function calcularIdade(dataNascimento?: string): string {
+  if (!dataNascimento) return "";
+  const [year, month, day] = dataNascimento.split("-").map(Number);
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  if (
+    today.getMonth() + 1 < month ||
+    (today.getMonth() + 1 === month && today.getDate() < day)
+  ) {
+    age--;
+  }
+  return `${age} anos`;
+}
+
 export function getInitials(nome: string): string {
   const parts = nome.trim().split(" ").filter(Boolean);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();

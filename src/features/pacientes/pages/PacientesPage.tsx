@@ -9,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePageActions } from "@/features/dashboard/contexts/PageActionsContext";
 import { usePacientesViewModel } from "@/features/pacientes/viewmodels/usePacientesViewModel";
@@ -24,6 +25,7 @@ type RowActionsProps = {
   onToggle: () => void;
   onClose: () => void;
   onDeleteClick: (paciente: Paciente) => void;
+  onViewClick: (paciente: Paciente) => void;
 };
 
 function RowActions({
@@ -32,6 +34,7 @@ function RowActions({
   onToggle,
   onClose,
   onDeleteClick,
+  onViewClick,
 }: RowActionsProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -61,9 +64,12 @@ function RowActions({
       {open && (
         <div className="absolute right-0 top-full z-50 mt-1.5 w-44 overflow-hidden rounded-xl border border-border/70 bg-white shadow-lg shadow-black/8">
           <div className="p-1">
-            <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60">
+            <button
+              onClick={() => { onClose(); onViewClick(paciente); }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60"
+            >
               <Eye className="size-3.5 shrink-0 text-muted-foreground/50" />
-              Ver detalhes
+              Ver prontuário
             </button>
             <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60">
               <Pencil className="size-3.5 shrink-0 text-muted-foreground/50" />
@@ -87,6 +93,7 @@ function RowActions({
 }
 
 export function PacientesPage() {
+  const navigate = useNavigate();
   const { setActions } = usePageActions();
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Paciente | null>(null);
@@ -232,7 +239,8 @@ export function PacientesPage() {
                   {pacientes.map((paciente) => (
                     <tr
                       key={paciente.id}
-                      className="group transition-colors duration-100 hover:bg-muted/20"
+                      onClick={() => navigate(`/dashboard/pacientes/${paciente.id}`)}
+                      className="group cursor-pointer transition-colors duration-100 hover:bg-muted/20"
                     >
                       <td className="px-6 py-4">
                         <span className="text-xs font-medium tabular-nums text-muted-foreground/50">
@@ -257,7 +265,10 @@ export function PacientesPage() {
                       <td className="px-6 py-4 text-muted-foreground/60">
                         {formatDate(paciente.dataNascimento)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td
+                        className="px-6 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <RowActions
                           paciente={paciente}
                           open={openActionId === paciente.id}
@@ -268,6 +279,7 @@ export function PacientesPage() {
                           }
                           onClose={() => setOpenActionId(null)}
                           onDeleteClick={setDeleteTarget}
+                          onViewClick={(p) => navigate(`/dashboard/pacientes/${p.id}`)}
                         />
                       </td>
                     </tr>
