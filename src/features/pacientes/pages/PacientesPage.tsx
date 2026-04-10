@@ -65,7 +65,10 @@ function RowActions({
         <div className="absolute right-0 top-full z-50 mt-1.5 w-44 overflow-hidden rounded-xl border border-border/70 bg-white shadow-lg shadow-black/8">
           <div className="p-1">
             <button
-              onClick={() => { onClose(); onViewClick(paciente); }}
+              onClick={() => {
+                onClose();
+                onViewClick(paciente);
+              }}
               className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60"
             >
               <Eye className="size-3.5 shrink-0 text-muted-foreground/50" />
@@ -79,7 +82,10 @@ function RowActions({
           <div className="mx-2 h-px bg-border/60" />
           <div className="p-1">
             <button
-              onClick={() => { onClose(); onDeleteClick(paciente); }}
+              onClick={() => {
+                onClose();
+                onDeleteClick(paciente);
+              }}
               className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-destructive/80 transition-colors hover:bg-destructive/8 hover:text-destructive"
             >
               <Trash2 className="size-3.5 shrink-0" />
@@ -128,7 +134,10 @@ export function PacientesPage() {
       <CadastroPacienteModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={() => { setModalOpen(false); refresh(); }}
+        onSuccess={() => {
+          setModalOpen(false);
+          refresh();
+        }}
       />
       <ExcluirPacienteDialog
         open={deleteTarget !== null}
@@ -142,8 +151,6 @@ export function PacientesPage() {
 
       <div className="h-full overflow-y-auto">
         <div className="space-y-6">
-
-          {/* Page header */}
           <div className="flex items-end justify-between">
             <div>
               <h1 className="text-[22px] font-semibold text-foreground">
@@ -151,16 +158,14 @@ export function PacientesPage() {
               </h1>
               {!loading && !error && (
                 <p className="mt-0.5 text-sm text-muted-foreground/65">
-                  {pacientes.length} paciente{pacientes.length !== 1 ? "s" : ""} cadastrado{pacientes.length !== 1 ? "s" : ""}
+                  {pacientes.length} paciente{pacientes.length !== 1 ? "s" : ""}{" "}
+                  cadastrado{pacientes.length !== 1 ? "s" : ""}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Main card */}
           <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
-
-            {/* Toolbar */}
             <div className="flex items-center justify-between gap-4 px-6 py-4">
               <span className="text-[13px] font-semibold tracking-wide text-foreground/70">
                 Lista de Pacientes
@@ -209,13 +214,12 @@ export function PacientesPage() {
                   <p className="text-xs text-muted-foreground/50">
                     {search
                       ? "Tente buscar por outro nome."
-                      : "Cadastre o primeiro paciente clicando em \"Novo Paciente\"."}
+                      : 'Cadastre o primeiro paciente clicando em "Novo Paciente".'}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Table */}
             {!loading && !error && pacientes.length > 0 && (
               <table className="w-full text-sm">
                 <thead>
@@ -239,7 +243,9 @@ export function PacientesPage() {
                   {pacientes.map((paciente) => (
                     <tr
                       key={paciente.id}
-                      onClick={() => navigate(`/dashboard/pacientes/${paciente.id}`)}
+                      onClick={() =>
+                        navigate(`/dashboard/pacientes/${paciente.id}`)
+                      }
                       className="group cursor-pointer transition-colors duration-100 hover:bg-muted/20"
                     >
                       <td className="px-6 py-4">
@@ -279,7 +285,9 @@ export function PacientesPage() {
                           }
                           onClose={() => setOpenActionId(null)}
                           onDeleteClick={setDeleteTarget}
-                          onViewClick={(p) => navigate(`/dashboard/pacientes/${p.id}`)}
+                          onViewClick={(p) =>
+                            navigate(`/dashboard/pacientes/${p.id}`)
+                          }
                         />
                       </td>
                     </tr>

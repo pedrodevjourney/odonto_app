@@ -7,6 +7,7 @@ import { AgendaPage } from "@/features/agenda/pages/AgendaPage";
 import { PacientesPage } from "@/features/pacientes/pages/PacientesPage";
 import { ProntuarioPage } from "@/features/pacientes/pages/ProntuarioPage";
 import { PagamentosPage } from "@/features/pagamentos/pages/PagamentosPage";
+import { FinanceiroPage } from "@/features/financeiro/pages/FinanceiroPage";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
             <Route index element={<DashboardHomePage />} />
             <Route path="pacientes" element={<PacientesPage />} />
             <Route path="pacientes/:id" element={<ProntuarioPage />} />
+            <Route path="pacientes/:id/financeiro" element={<FinanceiroPage />} />
             <Route path="agenda" element={<AgendaPage />} />
             <Route path="pagamentos" element={<PagamentosPage />} />
           </Route>

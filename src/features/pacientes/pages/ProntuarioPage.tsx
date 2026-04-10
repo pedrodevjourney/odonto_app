@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ClipboardList, FileText, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ClipboardList,
+  DollarSign,
+  FileText,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProntuarioViewModel } from "@/features/pacientes/viewmodels/useProntuarioViewModel";
 import { PacienteInfoHeader } from "@/features/pacientes/components/PacienteInfoHeader";
@@ -53,16 +59,29 @@ export function ProntuarioPage() {
     icon: React.ElementType;
     count: number;
   }[] = [
-    { id: "anotacoes", label: "Anotações",    icon: FileText,     count: anotacoes.length },
-    { id: "dentes",    label: "Dentes",       icon: ToothIcon,    count: dadosDentes.length },
-    { id: "ficha",     label: "Ficha Clínica", icon: ClipboardList, count: fichasClinicas.length },
+    {
+      id: "anotacoes",
+      label: "Anotações",
+      icon: FileText,
+      count: anotacoes.length,
+    },
+    {
+      id: "dentes",
+      label: "Dentes",
+      icon: ToothIcon,
+      count: dadosDentes.length,
+    },
+    {
+      id: "ficha",
+      label: "Ficha Clínica",
+      icon: ClipboardList,
+      count: fichasClinicas.length,
+    },
   ];
 
   return (
     <div className="h-full overflow-y-auto">
       <div className="space-y-5">
-
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -83,32 +102,43 @@ export function ProntuarioPage() {
           )}
         </div>
 
-        {/* Loading */}
         {loading && (
           <div className="flex items-center justify-center py-32">
             <Loader2 className="size-5 animate-spin text-muted-foreground/30" />
           </div>
         )}
 
-        {/* Error */}
         {!loading && error && (
           <div className="flex flex-col items-center gap-3 py-32 text-center">
             <p className="text-sm text-muted-foreground/60">{error}</p>
-            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/pacientes")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/dashboard/pacientes")}
+            >
               Voltar para pacientes
             </Button>
           </div>
         )}
 
-        {/* Content */}
         {!loading && !error && paciente && (
           <>
-            <PacienteInfoHeader paciente={paciente} />
+            <div className="flex items-center justify-between">
+              <PacienteInfoHeader paciente={paciente} />
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() =>
+                  navigate(`/dashboard/pacientes/${pacienteId}/financeiro`)
+                }
+              >
+                <DollarSign className="size-4" />
+                Financeiro
+              </Button>
+            </div>
 
-            {/* Tabs container */}
             <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
-
-              {/* Tab bar */}
               <div className="flex items-center gap-1.5 border-b border-border/60 bg-muted/20 px-5 py-3">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -143,7 +173,6 @@ export function ProntuarioPage() {
                 })}
               </div>
 
-              {/* Tab content */}
               <div className="p-6">
                 {activeTab === "anotacoes" && (
                   <AnotacoesTab
