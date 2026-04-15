@@ -123,23 +123,11 @@ export function ProntuarioPage() {
 
         {!loading && !error && paciente && (
           <>
-            <div className="flex items-center justify-between">
-              <PacienteInfoHeader paciente={paciente} />
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                onClick={() =>
-                  navigate(`/dashboard/pacientes/${pacienteId}/financeiro`)
-                }
-              >
-                <DollarSign className="size-4" />
-                Financeiro
-              </Button>
-            </div>
+            <PacienteInfoHeader paciente={paciente} />
 
             <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
-              <div className="flex items-center gap-1.5 border-b border-border/60 bg-muted/20 px-5 py-3">
+              <div className="flex items-center justify-between gap-1.5 border-b border-border/60 bg-muted/20 px-5 py-3">
+                <div className="flex items-center gap-1.5">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const active = activeTab === tab.id;
@@ -171,6 +159,18 @@ export function ProntuarioPage() {
                     </button>
                   );
                 })}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 shrink-0"
+                  onClick={() =>
+                    navigate(`/dashboard/pacientes/${pacienteId}/financeiro`)
+                  }
+                >
+                  <DollarSign className="size-4" />
+                  Financeiro
+                </Button>
               </div>
 
               <div className="p-6">

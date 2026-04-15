@@ -165,7 +165,7 @@ export function PacientesPage() {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
+          <div className="rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
             <div className="flex items-center justify-between gap-4 px-6 py-4">
               <span className="text-[13px] font-semibold tracking-wide text-foreground/70">
                 Lista de Pacientes
@@ -223,7 +223,7 @@ export function PacientesPage() {
             {!loading && !error && pacientes.length > 0 && (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border/50 bg-muted/35">
+                  <tr className="border-b border-border/50 bg-muted/35 [&>th:first-child]:rounded-tl-2xl [&>th:last-child]:rounded-tr-2xl">
                     <th className="w-14 px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
                       Nº
                     </th>
