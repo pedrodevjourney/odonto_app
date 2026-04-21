@@ -40,7 +40,7 @@ export function ProceduresBarChart({
           </div>
         </CardContent>
       ) : (
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {procedimentos.map((p, i) => {
             const percentage = (p.quantidade / max) * 100;
             const color = BAR_COLORS[i % BAR_COLORS.length];

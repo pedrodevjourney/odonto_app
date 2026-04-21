@@ -44,16 +44,16 @@ export function NextAppointmentsTable({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-y border-border bg-muted/50">
-                  <th className="px-6 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-1.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Paciente
                   </th>
-                  <th className="px-6 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-1.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Data/Hora
                   </th>
-                  <th className="px-6 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-1.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Tipo
                   </th>
-                  <th className="px-6 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-1.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Status
                   </th>
                 </tr>
@@ -64,18 +64,18 @@ export function NextAppointmentsTable({
                     key={c.id}
                     className="border-b border-border/50 transition-colors hover:bg-muted/30"
                   >
-                    <td className="whitespace-nowrap px-6 py-3 font-medium text-foreground">
+                    <td className="whitespace-nowrap px-6 py-2 font-medium text-foreground">
                       {c.pacienteNome}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-3 tabular-nums text-muted-foreground">
+                    <td className="whitespace-nowrap px-6 py-2 tabular-nums text-muted-foreground">
                       {format(new Date(c.dataHoraInicio), "dd MMM · HH:mm", {
                         locale: ptBR,
                       })}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-3 text-muted-foreground">
+                    <td className="whitespace-nowrap px-6 py-2 text-muted-foreground">
                       {TIPO_PROCEDIMENTO_LABELS[c.tipo] ?? c.tipo}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-3">
+                    <td className="whitespace-nowrap px-6 py-2">
                       <span
                         className={cn(
                           "inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset",
