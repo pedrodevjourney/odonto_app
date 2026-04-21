@@ -36,7 +36,7 @@ export function DashboardHomePage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="space-y-6">
+      <div className="mx-auto max-w-5xl space-y-6">
         {/* Header */}
         <div className="flex items-end justify-between">
           <div>
