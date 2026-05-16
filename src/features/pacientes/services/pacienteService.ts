@@ -43,6 +43,18 @@ export async function buscarPaciente(
   });
 }
 
+export async function editarPaciente(
+  token: string,
+  id: number,
+  data: Partial<PacienteFormData>,
+): Promise<Paciente> {
+  return apiFetch<Paciente>(`/pacientes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function excluirPaciente(
   token: string,
   id: number,

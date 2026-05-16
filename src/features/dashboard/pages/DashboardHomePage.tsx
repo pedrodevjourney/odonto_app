@@ -35,7 +35,7 @@ export function DashboardHomePage() {
   if (!data) return null;
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto px-px">
       <div className="mx-auto max-w-5xl space-y-6">
         {/* Header */}
         <div className="flex items-end justify-between">

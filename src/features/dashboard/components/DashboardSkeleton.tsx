@@ -19,7 +19,7 @@ function CardSkeleton({ height }: { height: string }) {
 
 export function DashboardSkeleton() {
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto px-px">
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">

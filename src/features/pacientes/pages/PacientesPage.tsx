@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { usePageActions } from "@/features/dashboard/contexts/PageActionsContext";
 import { usePacientesViewModel } from "@/features/pacientes/viewmodels/usePacientesViewModel";
 import { CadastroPacienteModal } from "@/features/pacientes/components/CadastroPacienteModal";
+import { EditarPacienteModal } from "@/features/pacientes/components/EditarPacienteModal";
 import { ExcluirPacienteDialog } from "@/features/pacientes/components/ExcluirPacienteDialog";
 import type { Paciente } from "@/features/pacientes/types/paciente";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ type RowActionsProps = {
   onClose: () => void;
   onDeleteClick: (paciente: Paciente) => void;
   onViewClick: (paciente: Paciente) => void;
+  onEditClick: (paciente: Paciente) => void;
 };
 
 function RowActions({
@@ -35,6 +37,7 @@ function RowActions({
   onClose,
   onDeleteClick,
   onViewClick,
+  onEditClick,
 }: RowActionsProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -74,7 +77,13 @@ function RowActions({
               <Eye className="size-3.5 shrink-0 text-muted-foreground/50" />
               Ver prontuário
             </button>
-            <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60">
+            <button
+              onClick={() => {
+                onClose();
+                onEditClick(paciente);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-foreground/75 transition-colors hover:bg-muted/60"
+            >
               <Pencil className="size-3.5 shrink-0 text-muted-foreground/50" />
               Editar
             </button>
@@ -102,6 +111,7 @@ export function PacientesPage() {
   const navigate = useNavigate();
   const { setActions } = usePageActions();
   const [modalOpen, setModalOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Paciente | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Paciente | null>(null);
   const {
     pacientes,
@@ -139,6 +149,17 @@ export function PacientesPage() {
           refresh();
         }}
       />
+      {editTarget && (
+        <EditarPacienteModal
+          open={editTarget !== null}
+          paciente={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSuccess={() => {
+            setEditTarget(null);
+            refresh();
+          }}
+        />
+      )}
       <ExcluirPacienteDialog
         open={deleteTarget !== null}
         pacienteNome={deleteTarget?.nome}
@@ -149,7 +170,7 @@ export function PacientesPage() {
         }}
       />
 
-      <div className="h-full overflow-y-auto">
+      <div className="h-full overflow-y-auto px-px">
         <div className="space-y-6">
           <div className="flex items-end justify-between">
             <div>
@@ -285,6 +306,7 @@ export function PacientesPage() {
                           }
                           onClose={() => setOpenActionId(null)}
                           onDeleteClick={setDeleteTarget}
+                          onEditClick={setEditTarget}
                           onViewClick={(p) =>
                             navigate(`/dashboard/pacientes/${p.id}`)
                           }
