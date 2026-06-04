@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   Loader2,
@@ -22,7 +22,11 @@ import type { LancamentoResponse } from "@/features/financeiro/types/lancamento"
 export function FinanceiroPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const pacienteId = Number(id);
+
+  const backTo: string = location.state?.backTo ?? "/dashboard/pagamentos";
+  const backLabel: string = location.state?.backLabel ?? "Pagamentos";
 
   const {
     lancamentos,
@@ -65,11 +69,11 @@ export function FinanceiroPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/dashboard/pagamentos")}
+              onClick={() => navigate(backTo)}
               className="h-8 gap-1.5 px-2 text-[13px] text-muted-foreground/60 hover:text-foreground"
             >
               <ArrowLeft className="size-3.5" />
-              Pagamentos
+              {backLabel}
             </Button>
             {!loading && resumo && (
               <>

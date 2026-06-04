@@ -11,7 +11,6 @@ import {
 
 const schema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
-  numero: z.number().optional(),
   dataNascimento: z.string().optional(),
   estadoCivil: z.enum(ESTADO_CIVIL_VALUES).optional(),
   profissao: z.string().optional(),
@@ -39,7 +38,6 @@ export function useEditarPacienteViewModel(
     resolver: zodResolver(schema),
     defaultValues: {
       nome: paciente.nome,
-      numero: paciente.numero,
       dataNascimento: paciente.dataNascimento ?? undefined,
       estadoCivil: paciente.estadoCivil,
       profissao: paciente.profissao ?? "",
@@ -61,7 +59,6 @@ export function useEditarPacienteViewModel(
 
     const payload: Partial<FormValues> = {
       nome: values.nome,
-      numero: values.numero,
       dataNascimento: values.dataNascimento || undefined,
       estadoCivil: values.estadoCivil,
       profissao: values.profissao || undefined,

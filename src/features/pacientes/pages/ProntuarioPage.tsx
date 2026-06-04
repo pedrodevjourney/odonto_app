@@ -165,7 +165,12 @@ export function ProntuarioPage() {
                   size="sm"
                   className="gap-1.5 shrink-0"
                   onClick={() =>
-                    navigate(`/dashboard/pacientes/${pacienteId}/financeiro`)
+                    navigate(`/dashboard/pacientes/${pacienteId}/financeiro`, {
+                      state: {
+                        backTo: `/dashboard/pacientes/${pacienteId}`,
+                        backLabel: "Prontuário",
+                      },
+                    })
                   }
                 >
                   <DollarSign className="size-4" />

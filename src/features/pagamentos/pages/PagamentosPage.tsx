@@ -129,7 +129,12 @@ export function PagamentosPage() {
                 <button
                   key={paciente.id}
                   onClick={() =>
-                    navigate(`/dashboard/pacientes/${paciente.id}/financeiro`)
+                    navigate(`/dashboard/pacientes/${paciente.id}/financeiro`, {
+                      state: {
+                        backTo: "/dashboard/pagamentos",
+                        backLabel: "Pagamentos",
+                      },
+                    })
                   }
                   className="group flex w-full items-center gap-4 px-6 py-3.5 text-left transition-colors duration-100 hover:bg-muted/20"
                 >
@@ -146,9 +151,6 @@ export function PagamentosPage() {
                       </p>
                     )}
                   </div>
-                  <span className="text-xs tabular-nums text-muted-foreground/40">
-                    Nº {paciente.numero ?? "—"}
-                  </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground/30 transition-colors group-hover:text-foreground/50" />
                 </button>
               ))}

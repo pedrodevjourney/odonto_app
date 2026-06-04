@@ -1,4 +1,4 @@
-import { Bell, CircleUser, Loader2, LogOut, PanelLeft } from "lucide-react";
+import { CircleUser, Loader2, LogOut, PanelLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/features/dashboard/components/AppSidebar";
@@ -86,10 +86,6 @@ function Topbar() {
       <div className="flex-1" />
 
       {actions && <div className="flex items-center gap-2">{actions}</div>}
-
-      <Button variant="ghost" size="icon-sm" aria-label="Notificações">
-        <Bell className="size-5" />
-      </Button>
 
       <UserMenu />
     </header>

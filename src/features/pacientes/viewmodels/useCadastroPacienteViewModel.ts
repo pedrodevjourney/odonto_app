@@ -11,7 +11,6 @@ import {
 
 const schema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
-  numero: z.number().optional(),
   dataNascimento: z.string().optional(),
   estadoCivil: z.enum(ESTADO_CIVIL_VALUES).optional(),
   profissao: z.string().optional(),
@@ -42,7 +41,6 @@ export function useCadastroPacienteViewModel(onSuccess: () => void) {
 
     const payload: PacienteFormData = {
       nome: values.nome,
-      numero: values.numero,
       dataNascimento: values.dataNascimento || undefined,
       estadoCivil: values.estadoCivil,
       profissao: values.profissao || undefined,

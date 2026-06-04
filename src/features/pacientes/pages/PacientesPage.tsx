@@ -245,9 +245,6 @@ export function PacientesPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50 bg-muted/35 [&>th:first-child]:rounded-tl-2xl [&>th:last-child]:rounded-tr-2xl">
-                    <th className="w-14 px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
-                      Nº
-                    </th>
                     <th className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
                       Paciente
                     </th>
@@ -255,7 +252,7 @@ export function PacientesPage() {
                       Telefone
                     </th>
                     <th className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
-                      Nascimento
+                      Início do Tratamento
                     </th>
                     <th className="w-16 px-6 py-3" />
                   </tr>
@@ -269,11 +266,6 @@ export function PacientesPage() {
                       }
                       className="group cursor-pointer transition-colors duration-100 hover:bg-muted/20"
                     >
-                      <td className="px-6 py-4">
-                        <span className="text-xs font-medium tabular-nums text-muted-foreground/50">
-                          {paciente.numero ?? "—"}
-                        </span>
-                      </td>
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-medium text-foreground/85">
@@ -290,7 +282,7 @@ export function PacientesPage() {
                         {paciente.telefone ?? "—"}
                       </td>
                       <td className="px-6 py-4 text-muted-foreground/60">
-                        {formatDate(paciente.dataNascimento)}
+                        {formatDate(paciente.inicioTratamento) ?? "—"}
                       </td>
                       <td
                         className="px-6 py-4"

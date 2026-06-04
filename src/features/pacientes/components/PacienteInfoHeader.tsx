@@ -74,12 +74,10 @@ export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
             <h2 className="text-xl font-semibold leading-tight text-foreground">
               {paciente.nome}
             </h2>
-            {paciente.numero && (
-              <span className="flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground/55">
+            <span className="flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground/55">
                 <Hash className="size-2.5" />
-                {paciente.numero}
+                {paciente.id}
               </span>
-            )}
             {paciente.dlne && (
               <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600/80">
                 DLNE

@@ -10,7 +10,6 @@ export type EstadoCivil = (typeof ESTADO_CIVIL_VALUES)[number];
 
 export interface Paciente {
   id: number;
-  numero?: number;
   nome: string;
   residencia?: string;
   enderecoCompleto?: string;
@@ -31,7 +30,6 @@ export interface Paciente {
 
 export interface PacienteFormData {
   nome: string;
-  numero?: number;
   residencia?: string;
   enderecoCompleto?: string;
   profissao?: string;
