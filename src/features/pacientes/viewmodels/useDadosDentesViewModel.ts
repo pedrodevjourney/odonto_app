@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
-import { addDadosDente } from "@/features/pacientes/services/prontuarioService";
+import { salvarDadosDente } from "@/features/pacientes/services/prontuarioService";
 import type { DadosDenteFormData } from "@/features/pacientes/types/prontuario";
 
 const schema = z.object({
@@ -42,7 +42,7 @@ export function useDadosDentesViewModel(pacienteId: number, onSuccess: () => voi
       observacoes: values.observacoes || undefined,
     };
     try {
-      await addDadosDente(user.token, pacienteId, payload);
+      await salvarDadosDente(user.token, pacienteId, payload);
       toast.success("Dados do dente adicionados!");
       form.reset({ cor: "", escurecimento: "", forma: "", observacoes: "" });
       onSuccess();

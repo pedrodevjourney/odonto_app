@@ -3,19 +3,24 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ClipboardList,
-  DollarSign,
   FileText,
+  History,
+  ImagePlus,
+  ClipboardCheck,
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProntuarioViewModel } from "@/features/pacientes/viewmodels/useProntuarioViewModel";
 import { PacienteInfoHeader } from "@/features/pacientes/components/PacienteInfoHeader";
 import { AnotacoesTab } from "@/features/pacientes/components/tabs/AnotacoesTab";
-import { DentesTab } from "@/features/pacientes/components/tabs/DentesTab";
+import { OdontogramaTab } from "@/features/pacientes/components/tabs/OdontogramaTab";
 import { FichaClinicaTab } from "@/features/pacientes/components/tabs/FichaClinicaTab";
+import { PlanoTratamentoTab } from "@/features/pacientes/components/tabs/PlanoTratamentoTab";
+import { RadiografiasTab } from "@/features/pacientes/components/tabs/RadiografiasTab";
+import { HistoricoTab } from "@/features/pacientes/components/tabs/HistoricoTab";
 import { cn } from "@/lib/utils";
 
-type Tab = "anotacoes" | "dentes" | "ficha";
+type Tab = "anotacoes" | "odontograma" | "ficha" | "plano" | "radiografias" | "historico";
 
 function ToothIcon({ className }: { className?: string }) {
   return (
@@ -46,37 +51,24 @@ export function ProntuarioPage() {
     dadosDentes,
     anotacoes,
     fichasClinicas,
+    planoTratamento,
+    historico,
     loading,
     error,
     refreshDadosDentes,
     refreshAnotacoes,
     refreshFichasClinicas,
+    refreshPlanoTratamento,
+    refreshHistorico,
   } = useProntuarioViewModel(pacienteId);
 
-  const tabs: {
-    id: Tab;
-    label: string;
-    icon: React.ElementType;
-    count: number;
-  }[] = [
-    {
-      id: "anotacoes",
-      label: "Anotações",
-      icon: FileText,
-      count: anotacoes.length,
-    },
-    {
-      id: "dentes",
-      label: "Dentes",
-      icon: ToothIcon,
-      count: dadosDentes.length,
-    },
-    {
-      id: "ficha",
-      label: "Ficha Clínica",
-      icon: ClipboardList,
-      count: fichasClinicas.length,
-    },
+  const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [
+    { id: "anotacoes",    label: "Anotações",       icon: FileText,       count: anotacoes.length      },
+    { id: "odontograma",  label: "Odontograma",     icon: ToothIcon,      count: dadosDentes.filter(d => d.status && d.status !== "SADIO").length || undefined },
+    { id: "ficha",        label: "Ficha Clínica",   icon: ClipboardList,  count: fichasClinicas.length },
+    { id: "plano",        label: "Plano",            icon: ClipboardCheck, count: planoTratamento.length },
+    { id: "radiografias", label: "Radiografias",    icon: ImagePlus                                     },
+    { id: "historico",    label: "Histórico",        icon: History,        count: historico.length      },
   ];
 
   return (
@@ -111,11 +103,7 @@ export function ProntuarioPage() {
         {!loading && error && (
           <div className="flex flex-col items-center gap-3 py-32 text-center">
             <p className="text-sm text-muted-foreground/60">{error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/dashboard/pacientes")}
-            >
+            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/pacientes")}>
               Voltar para pacientes
             </Button>
           </div>
@@ -123,82 +111,69 @@ export function ProntuarioPage() {
 
         {!loading && !error && paciente && (
           <>
-            <PacienteInfoHeader paciente={paciente} />
+            <PacienteInfoHeader
+              paciente={paciente}
+              onFinanceiro={() =>
+                navigate(`/dashboard/pacientes/${pacienteId}/financeiro`, {
+                  state: {
+                    backTo: `/dashboard/pacientes/${pacienteId}`,
+                    backLabel: "Prontuário",
+                  },
+                })
+              }
+            />
 
             <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
-              <div className="flex items-center justify-between gap-1.5 border-b border-border/60 bg-muted/20 px-5 py-3">
-                <div className="flex items-center gap-1.5">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const active = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={cn(
-                        "flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-all duration-150",
-                        active
-                          ? "bg-primary text-white shadow-sm shadow-primary/30"
-                          : "text-foreground/55 hover:bg-white hover:text-foreground/80 hover:shadow-sm",
-                      )}
-                    >
-                      <Icon className="size-3.5 shrink-0" />
-                      {tab.label}
-                      {tab.count > 0 && (
-                        <span
-                          className={cn(
-                            "min-w-[18px] rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums leading-none",
-                            active
-                              ? "bg-white/25 text-white"
-                              : "bg-muted text-muted-foreground/70",
-                          )}
-                        >
-                          {tab.count}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 shrink-0"
-                  onClick={() =>
-                    navigate(`/dashboard/pacientes/${pacienteId}/financeiro`, {
-                      state: {
-                        backTo: `/dashboard/pacientes/${pacienteId}`,
-                        backLabel: "Prontuário",
-                      },
-                    })
-                  }
-                >
-                  <DollarSign className="size-4" />
-                  Financeiro
-                </Button>
+              <div className="flex items-center gap-1 overflow-x-auto border-b border-border/60 bg-muted/20 px-5 py-3 scrollbar-none">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const active = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cn(
+                          "flex shrink-0 items-center gap-2 rounded-lg px-3.5 py-2 text-[13px] font-semibold transition-all duration-150",
+                          active
+                            ? "bg-primary text-white shadow-sm shadow-primary/30"
+                            : "text-foreground/55 hover:bg-white hover:text-foreground/80 hover:shadow-sm",
+                        )}
+                      >
+                        <Icon className="size-3.5 shrink-0" />
+                        {tab.label}
+                        {tab.count != null && tab.count > 0 && (
+                          <span
+                            className={cn(
+                              "min-w-[18px] rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums leading-none",
+                              active ? "bg-white/25 text-white" : "bg-muted text-muted-foreground/70",
+                            )}
+                          >
+                            {tab.count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
               </div>
 
               <div className="p-6">
                 {activeTab === "anotacoes" && (
-                  <AnotacoesTab
-                    pacienteId={pacienteId}
-                    anotacoes={anotacoes}
-                    onRefresh={refreshAnotacoes}
-                  />
+                  <AnotacoesTab pacienteId={pacienteId} anotacoes={anotacoes} onRefresh={refreshAnotacoes} />
                 )}
-                {activeTab === "dentes" && (
-                  <DentesTab
-                    pacienteId={pacienteId}
-                    dadosDentes={dadosDentes}
-                    onRefresh={refreshDadosDentes}
-                  />
+                {activeTab === "odontograma" && (
+                  <OdontogramaTab pacienteId={pacienteId} dadosDentes={dadosDentes} onRefresh={refreshDadosDentes} />
                 )}
                 {activeTab === "ficha" && (
-                  <FichaClinicaTab
-                    pacienteId={pacienteId}
-                    fichasClinicas={fichasClinicas}
-                    onRefresh={refreshFichasClinicas}
-                  />
+                  <FichaClinicaTab pacienteId={pacienteId} fichasClinicas={fichasClinicas} onRefresh={refreshFichasClinicas} />
+                )}
+                {activeTab === "plano" && (
+                  <PlanoTratamentoTab pacienteId={pacienteId} itens={planoTratamento} onRefresh={refreshPlanoTratamento} />
+                )}
+                {activeTab === "radiografias" && (
+                  <RadiografiasTab pacienteId={pacienteId} />
+                )}
+                {activeTab === "historico" && (
+                  <HistoricoTab itens={historico} />
                 )}
               </div>
             </div>

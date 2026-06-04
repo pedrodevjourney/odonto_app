@@ -7,12 +7,15 @@ import {
   UserRound,
   Stethoscope,
   Hash,
+  DollarSign,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Paciente } from "@/features/pacientes/types/paciente";
 import { maskPhone, formatDate, calcularIdade } from "@/features/pacientes/utils/pacienteHelpers";
 
 interface PacienteInfoHeaderProps {
   paciente: Paciente;
+  onFinanceiro?: () => void;
 }
 
 const ESTADO_CIVIL_LABELS: Record<string, string> = {
@@ -22,7 +25,6 @@ const ESTADO_CIVIL_LABELS: Record<string, string> = {
   VIUVO: "Viúvo(a)",
   UNIAO_ESTAVEL: "União Estável",
 };
-
 
 function InfoItem({
   icon: Icon,
@@ -47,7 +49,7 @@ function InfoItem({
   );
 }
 
-export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
+export function PacienteInfoHeader({ paciente, onFinanceiro }: PacienteInfoHeaderProps) {
   const idade = calcularIdade(paciente.dataNascimento);
   const nascimento = paciente.dataNascimento
     ? `${formatDate(paciente.dataNascimento)}${idade ? `  ·  ${idade}` : ""}`
@@ -63,21 +65,19 @@ export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
     <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm shadow-black/5">
       {/* Top band */}
       <div className="flex items-center gap-5 border-b border-border/50 px-6 py-5">
-        {/* Icon circle — no abbreviation */}
         <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/15">
           <UserRound className="size-7 text-primary" strokeWidth={1.5} />
         </div>
 
-        {/* Name + number + status */}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
             <h2 className="text-xl font-semibold leading-tight text-foreground">
               {paciente.nome}
             </h2>
             <span className="flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground/55">
-                <Hash className="size-2.5" />
-                {paciente.id}
-              </span>
+              <Hash className="size-2.5" />
+              {paciente.id}
+            </span>
             {paciente.dlne && (
               <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600/80">
                 DLNE
@@ -85,7 +85,6 @@ export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
             )}
           </div>
 
-          {/* Primary info row */}
           <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
             {paciente.telefone && (
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground/70">
@@ -107,6 +106,18 @@ export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
             )}
           </div>
         </div>
+
+        {onFinanceiro && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onFinanceiro}
+            className="shrink-0 gap-1.5"
+          >
+            <DollarSign className="size-4" />
+            Financeiro
+          </Button>
+        )}
       </div>
 
       {/* Detail grid */}
@@ -120,58 +131,26 @@ export function PacienteInfoHeader({ paciente }: PacienteInfoHeaderProps) {
           <InfoItem
             icon={Heart}
             label="Estado Civil"
-            value={
-              paciente.estadoCivil
-                ? ESTADO_CIVIL_LABELS[paciente.estadoCivil]
-                : null
-            }
+            value={paciente.estadoCivil ? ESTADO_CIVIL_LABELS[paciente.estadoCivil] : null}
           />
-          <InfoItem
-            icon={Phone}
-            label="Telefone Secundário"
-            value={telefoneSecundario}
-          />
-          <InfoItem
-            icon={MapPin}
-            label="Endereço"
-            value={endereco}
-          />
-          <InfoItem
-            icon={UserRound}
-            label="Nacionalidade"
-            value={paciente.nacionalidade}
-          />
-          <InfoItem
-            icon={UserRound}
-            label="Indicado por"
-            value={paciente.indicadoPor}
-          />
+          <InfoItem icon={Phone} label="Telefone Secundário" value={telefoneSecundario} />
+          <InfoItem icon={MapPin} label="Endereço" value={endereco} />
+          <InfoItem icon={UserRound} label="Nacionalidade" value={paciente.nacionalidade} />
+          <InfoItem icon={UserRound} label="Indicado por" value={paciente.indicadoPor} />
           <InfoItem
             icon={Stethoscope}
             label="Início do tratamento"
-            value={
-              paciente.inicioTratamento
-                ? formatDate(paciente.inicioTratamento)
-                : null
-            }
+            value={paciente.inicioTratamento ? formatDate(paciente.inicioTratamento) : null}
           />
           <InfoItem
             icon={Stethoscope}
             label="Término do tratamento"
-            value={
-              paciente.terminoTratamento
-                ? formatDate(paciente.terminoTratamento)
-                : null
-            }
+            value={paciente.terminoTratamento ? formatDate(paciente.terminoTratamento) : null}
           />
           <InfoItem
             icon={Stethoscope}
             label="Interrupção"
-            value={
-              paciente.interrupcaoTratamento
-                ? formatDate(paciente.interrupcaoTratamento)
-                : null
-            }
+            value={paciente.interrupcaoTratamento ? formatDate(paciente.interrupcaoTratamento) : null}
           />
         </div>
       )}
