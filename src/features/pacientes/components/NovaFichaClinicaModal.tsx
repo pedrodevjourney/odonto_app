@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import {
   Dialog,
@@ -28,10 +29,12 @@ import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/features/pacientes/components/DatePickerField";
 import { useFichaClinicaViewModel } from "@/features/pacientes/viewmodels/useFichaClinicaViewModel";
 import { DENTES_FDI } from "@/features/pacientes/types/prontuario";
+import type { FichaClinica } from "@/features/pacientes/types/prontuario";
 
 interface NovaFichaClinicaModalProps {
   open: boolean;
   pacienteId: number;
+  fichaParaEditar?: FichaClinica;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -39,21 +42,40 @@ interface NovaFichaClinicaModalProps {
 export function NovaFichaClinicaModal({
   open,
   pacienteId,
+  fichaParaEditar,
   onClose,
   onSuccess,
 }: NovaFichaClinicaModalProps) {
   const { form, handleSubmit, isSubmitting } = useFichaClinicaViewModel(
     pacienteId,
     () => { onSuccess(); onClose(); },
+    fichaParaEditar,
   );
+
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        data: fichaParaEditar?.data ?? new Date().toISOString().split("T")[0],
+        numeroDente: fichaParaEditar?.numeroDente ?? undefined,
+        observacoesClinicas: fichaParaEditar?.observacoesClinicas ?? "",
+        deve: fichaParaEditar?.deve ?? undefined,
+        haver: fichaParaEditar?.haver ?? undefined,
+        saldo: fichaParaEditar?.saldo ?? undefined,
+      });
+    }
+  }, [open, fichaParaEditar, form]);
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nova Entrada — Ficha Clínica</DialogTitle>
+          <DialogTitle>
+            {fichaParaEditar ? "Editar Entrada" : "Nova Entrada — Ficha Clínica"}
+          </DialogTitle>
           <DialogDescription>
-            Registre um procedimento ou movimentação financeira.
+            {fichaParaEditar
+              ? "Corrija os dados da entrada clínica."
+              : "Registre um procedimento ou movimentação financeira."}
           </DialogDescription>
         </DialogHeader>
 
@@ -65,14 +87,9 @@ export function NovaFichaClinicaModal({
                 name="data"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Data <span className="text-destructive">*</span>
-                    </FormLabel>
+                    <FormLabel>Data <span className="text-destructive">*</span></FormLabel>
                     <FormControl>
-                      <DatePickerField
-                        value={field.value}
-                        onChange={(v) => field.onChange(v ?? "")}
-                      />
+                      <DatePickerField value={field.value} onChange={(v) => field.onChange(v ?? "")} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -133,9 +150,7 @@ export function NovaFichaClinicaModal({
                   name={field_name}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="capitalize">
-                        {field_name} (R$)
-                      </FormLabel>
+                      <FormLabel className="capitalize">{field_name} (R$)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -144,9 +159,7 @@ export function NovaFichaClinicaModal({
                           placeholder="0,00"
                           value={field.value ?? ""}
                           onChange={(e) =>
-                            field.onChange(
-                              e.target.value === "" ? undefined : Number(e.target.value),
-                            )
+                            field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
                           }
                         />
                       </FormControl>
@@ -163,7 +176,7 @@ export function NovaFichaClinicaModal({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-                Salvar
+                {fichaParaEditar ? "Salvar alterações" : "Salvar"}
               </Button>
             </DialogFooter>
           </form>

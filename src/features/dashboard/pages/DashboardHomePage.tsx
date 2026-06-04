@@ -14,6 +14,7 @@ import { FinancialSummaryCard } from "../components/FinancialSummaryCard";
 import { AttendanceDonutChart } from "../components/AttendanceDonutChart";
 import { NextAppointmentsTable } from "../components/NextAppointmentsTable";
 import { ProceduresBarChart } from "../components/ProceduresBarChart";
+import { AlertaRetornoCard } from "../components/AlertaRetornoCard";
 import { Button } from "@/components/ui/button";
 
 export function DashboardHomePage() {
@@ -98,10 +99,11 @@ export function DashboardHomePage() {
         {/* Row 3: Next Appointments + Procedures Chart */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <NextAppointmentsTable consultas={data.proximasConsultas} />
-          <ProceduresBarChart
-            procedimentos={data.procedimentosMaisRealizados}
-          />
+          <ProceduresBarChart procedimentos={data.procedimentosMaisRealizados} />
         </div>
+
+        {/* Row 4: Alerta de Retorno */}
+        <AlertaRetornoCard alertas={data.alertasRetorno} />
       </div>
     </div>
   );

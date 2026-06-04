@@ -3,8 +3,8 @@ import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
-import { addAnotacao } from "@/features/pacientes/services/prontuarioService";
-import type { AnotacaoFormData } from "@/features/pacientes/types/prontuario";
+import { addAnotacao, updateAnotacao } from "@/features/pacientes/services/prontuarioService";
+import type { Anotacao, AnotacaoFormData } from "@/features/pacientes/types/prontuario";
 
 const schema = z.object({
   dataAnotacao: z.string().min(1, "Data é obrigatória"),
@@ -13,14 +13,18 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export function useAnotacaoViewModel(pacienteId: number, onSuccess: () => void) {
+export function useAnotacaoViewModel(
+  pacienteId: number,
+  onSuccess: () => void,
+  anotacaoParaEditar?: Anotacao,
+) {
   const { user } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      dataAnotacao: new Date().toISOString().split("T")[0],
-      conteudo: "",
+      dataAnotacao: anotacaoParaEditar?.dataAnotacao ?? new Date().toISOString().split("T")[0],
+      conteudo: anotacaoParaEditar?.conteudo ?? "",
     },
   });
 
@@ -31,15 +35,17 @@ export function useAnotacaoViewModel(pacienteId: number, onSuccess: () => void) 
       conteudo: values.conteudo,
     };
     try {
-      await addAnotacao(user.token, pacienteId, payload);
-      toast.success("Anotação adicionada!");
-      form.reset({
-        dataAnotacao: new Date().toISOString().split("T")[0],
-        conteudo: "",
-      });
+      if (anotacaoParaEditar) {
+        await updateAnotacao(user.token, pacienteId, anotacaoParaEditar.id, payload);
+        toast.success("Anotação atualizada!");
+      } else {
+        await addAnotacao(user.token, pacienteId, payload);
+        toast.success("Anotação adicionada!");
+        form.reset({ dataAnotacao: new Date().toISOString().split("T")[0], conteudo: "" });
+      }
       onSuccess();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao adicionar anotação.");
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar anotação.");
     }
   });
 

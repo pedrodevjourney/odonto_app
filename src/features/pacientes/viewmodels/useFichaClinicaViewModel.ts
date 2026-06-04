@@ -3,8 +3,8 @@ import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
-import { addFichaClinica } from "@/features/pacientes/services/prontuarioService";
-import type { FichaClinicaFormData } from "@/features/pacientes/types/prontuario";
+import { addFichaClinica, updateFichaClinica } from "@/features/pacientes/services/prontuarioService";
+import type { FichaClinica, FichaClinicaFormData } from "@/features/pacientes/types/prontuario";
 
 const schema = z.object({
   data: z.string().min(1, "Data é obrigatória"),
@@ -17,14 +17,22 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export function useFichaClinicaViewModel(pacienteId: number, onSuccess: () => void) {
+export function useFichaClinicaViewModel(
+  pacienteId: number,
+  onSuccess: () => void,
+  fichaParaEditar?: FichaClinica,
+) {
   const { user } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      data: new Date().toISOString().split("T")[0],
-      observacoesClinicas: "",
+      data: fichaParaEditar?.data ?? new Date().toISOString().split("T")[0],
+      numeroDente: fichaParaEditar?.numeroDente ?? undefined,
+      observacoesClinicas: fichaParaEditar?.observacoesClinicas ?? "",
+      deve: fichaParaEditar?.deve ?? undefined,
+      haver: fichaParaEditar?.haver ?? undefined,
+      saldo: fichaParaEditar?.saldo ?? undefined,
     },
   });
 
@@ -39,15 +47,17 @@ export function useFichaClinicaViewModel(pacienteId: number, onSuccess: () => vo
       saldo: values.saldo,
     };
     try {
-      await addFichaClinica(user.token, pacienteId, payload);
-      toast.success("Entrada adicionada à ficha clínica!");
-      form.reset({
-        data: new Date().toISOString().split("T")[0],
-        observacoesClinicas: "",
-      });
+      if (fichaParaEditar) {
+        await updateFichaClinica(user.token, pacienteId, fichaParaEditar.id, payload);
+        toast.success("Ficha clínica atualizada!");
+      } else {
+        await addFichaClinica(user.token, pacienteId, payload);
+        toast.success("Entrada adicionada à ficha clínica!");
+        form.reset({ data: new Date().toISOString().split("T")[0], observacoesClinicas: "" });
+      }
       onSuccess();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao adicionar entrada.");
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar entrada.");
     }
   });
 

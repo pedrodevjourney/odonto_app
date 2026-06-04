@@ -168,6 +168,54 @@ export async function fetchRadiografiaBlob(
   return URL.createObjectURL(blob);
 }
 
+export async function updateAnotacao(
+  token: string,
+  pacienteId: number,
+  anotacaoId: number,
+  data: AnotacaoFormData,
+): Promise<Anotacao> {
+  return apiFetch<Anotacao>(`/pacientes/${pacienteId}/anotacoes/${anotacaoId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function deleteAnotacao(
+  token: string,
+  pacienteId: number,
+  anotacaoId: number,
+): Promise<void> {
+  return apiFetch<void>(`/pacientes/${pacienteId}/anotacoes/${anotacaoId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function updateFichaClinica(
+  token: string,
+  pacienteId: number,
+  fichaId: number,
+  data: FichaClinicaFormData,
+): Promise<FichaClinica> {
+  return apiFetch<FichaClinica>(`/pacientes/${pacienteId}/fichas-clinicas/${fichaId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function deleteFichaClinica(
+  token: string,
+  pacienteId: number,
+  fichaId: number,
+): Promise<void> {
+  return apiFetch<void>(`/pacientes/${pacienteId}/fichas-clinicas/${fichaId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function getHistorico(token: string, pacienteId: number): Promise<HistoricoItem[]> {
   return apiFetch<HistoricoItem[]>(`/pacientes/${pacienteId}/historico`, {
     headers: { Authorization: `Bearer ${token}` },

@@ -10,6 +10,7 @@ import {
   uploadRadiografia,
 } from "@/features/pacientes/services/prontuarioService";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
+import { useConfirm } from "@/hooks/useConfirm";
 import type { Radiografia, TipoRadiografia } from "@/features/pacientes/types/prontuario";
 
 interface RadiografiasTabProps {
@@ -32,11 +33,11 @@ interface RadioItem {
 
 export function RadiografiasTab({ pacienteId }: RadiografiasTabProps) {
   const { user } = useAuth();
+  const { confirm, dialog } = useConfirm();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [itens, setItens] = useState<RadioItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const carregar = useCallback(async () => {
     if (!user?.token) return;
@@ -80,8 +81,12 @@ export function RadiografiasTab({ pacienteId }: RadiografiasTabProps) {
 
   async function handleDelete(item: RadioItem) {
     if (!user?.token) return;
-    if (!confirm(`Excluir "${item.meta.nomeOriginal ?? "radiografia"}"?`)) return;
-    setDeletingId(item.meta.id);
+    const ok = await confirm({
+      title: "Excluir radiografia",
+      description: "A imagem será removida permanentemente do prontuário.",
+      itemName: item.meta.nomeOriginal ?? undefined,
+    });
+    if (!ok) return;
     try {
       await deleteRadiografia(user.token, pacienteId, item.meta.id);
       if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
@@ -89,13 +94,12 @@ export function RadiografiasTab({ pacienteId }: RadiografiasTabProps) {
       setItens((prev) => prev.filter((it) => it.meta.id !== item.meta.id));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao excluir.");
-    } finally {
-      setDeletingId(null);
     }
   }
 
   return (
     <>
+      {dialog}
       {previewUrl && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
@@ -200,7 +204,6 @@ export function RadiografiasTab({ pacienteId }: RadiografiasTabProps) {
                   )}
                   <button
                     onClick={() => handleDelete(item)}
-                    disabled={deletingId === item.meta.id}
                     className="rounded-md bg-black/60 p-1.5 text-white hover:bg-red-600"
                   >
                     <Trash2 className="size-3.5" />

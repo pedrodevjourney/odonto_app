@@ -43,10 +43,17 @@ export interface DashboardProcedimento {
   quantidade: number;
 }
 
+export interface AlertaRetorno {
+  pacienteId: number;
+  pacienteNome: string;
+  ultimaConsulta: string | null;
+}
+
 export interface DashboardResponse {
   pacientes: DashboardPacientes;
   consultas: DashboardConsultas;
   financeiro: DashboardFinanceiro;
   proximasConsultas: DashboardProximaConsulta[];
   procedimentosMaisRealizados: DashboardProcedimento[];
+  alertasRetorno: AlertaRetorno[];
 }

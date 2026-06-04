@@ -6,6 +6,7 @@ import { EmptyState } from "@/features/pacientes/components/EmptyState";
 import { ItemPlanoModal } from "@/features/pacientes/components/ItemPlanoModal";
 import { deleteItemPlano } from "@/features/pacientes/services/prontuarioService";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
+import { useConfirm } from "@/hooks/useConfirm";
 import { cn } from "@/lib/utils";
 import type { PlanoTratamento, StatusTratamento } from "@/features/pacientes/types/prontuario";
 
@@ -24,25 +25,27 @@ const STATUS_CONFIG: Record<StatusTratamento, { label: string; className: string
 
 export function PlanoTratamentoTab({ pacienteId, itens, onRefresh }: PlanoTratamentoTabProps) {
   const { user } = useAuth();
+  const { confirm, dialog } = useConfirm();
   const [modalOpen, setModalOpen] = useState(false);
   const [itemParaEditar, setItemParaEditar] = useState<PlanoTratamento | undefined>();
-  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const concluidos = itens.filter((i) => i.status === "CONCLUIDO").length;
   const total = itens.length;
 
   async function handleDelete(item: PlanoTratamento) {
     if (!user?.token) return;
-    if (!confirm(`Excluir "${item.procedimento}"?`)) return;
-    setDeletingId(item.id);
+    const ok = await confirm({
+      title: "Remover procedimento",
+      description: "O procedimento será removido do plano de tratamento permanentemente.",
+      itemName: item.procedimento,
+    });
+    if (!ok) return;
     try {
       await deleteItemPlano(user.token, pacienteId, item.id);
       toast.success("Procedimento removido.");
       onRefresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao remover.");
-    } finally {
-      setDeletingId(null);
     }
   }
 
@@ -58,6 +61,7 @@ export function PlanoTratamentoTab({ pacienteId, itens, onRefresh }: PlanoTratam
 
   return (
     <>
+      {dialog}
       <ItemPlanoModal
         open={modalOpen}
         pacienteId={pacienteId}
@@ -146,7 +150,6 @@ export function PlanoTratamentoTab({ pacienteId, itens, onRefresh }: PlanoTratam
                       size="icon"
                       className="size-7 text-destructive hover:text-destructive"
                       onClick={() => handleDelete(item)}
-                      disabled={deletingId === item.id}
                     >
                       <Trash2 className="size-3.5" />
                     </Button>

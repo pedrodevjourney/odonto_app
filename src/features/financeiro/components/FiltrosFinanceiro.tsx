@@ -78,27 +78,32 @@ export function FiltrosFinanceiro({ filtros, onChange }: FiltrosFinanceiroProps)
         </Select>
       </div>
 
-      <Button
-        variant="outline"
-        size="sm"
-        className="h-9 gap-1.5"
-        onClick={() => onChange({ ...filtros })}
-      >
-        <Search className="size-3.5" />
-        Filtrar
-      </Button>
+      <div className="space-y-1.5">
+        <label className="invisible text-[12px] font-medium">_</label>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5"
+            onClick={() => onChange({ ...filtros })}
+          >
+            <Search className="size-3.5" />
+            Filtrar
+          </Button>
 
-      {hasFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-9 gap-1.5 text-muted-foreground"
-          onClick={handleClear}
-        >
-          <X className="size-3.5" />
-          Limpar
-        </Button>
-      )}
+          {hasFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9 gap-1.5 text-muted-foreground"
+              onClick={handleClear}
+            >
+              <X className="size-3.5" />
+              Limpar
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
