@@ -30,19 +30,20 @@ interface OdontogramaTabProps {
 }
 
 const STATUS_CONFIG: Record<StatusDente, { label: string; bg: string; text: string; border: string }> = {
-  SADIO:      { label: "Sadio",      bg: "bg-white",       text: "text-foreground/60",  border: "border-border/50"  },
-  CARIADO:    { label: "Cariado",    bg: "bg-red-100",     text: "text-red-700",        border: "border-red-300"    },
-  RESTAURADO: { label: "Restaurado", bg: "bg-blue-100",    text: "text-blue-700",       border: "border-blue-300"   },
-  EXTRAIDO:   { label: "Extraído",   bg: "bg-zinc-200",    text: "text-zinc-500",       border: "border-zinc-400"   },
-  IMPLANTE:   { label: "Implante",   bg: "bg-violet-100",  text: "text-violet-700",     border: "border-violet-300" },
-  AUSENTE:    { label: "Ausente",    bg: "bg-zinc-100",    text: "text-zinc-400",       border: "border-zinc-300 border-dashed" },
+  SADIO:       { label: "Sadio",        bg: "bg-white",        text: "text-foreground/60",  border: "border-border/50"                 },
+  CARIADO:     { label: "Cariado",      bg: "bg-red-100",      text: "text-red-700",        border: "border-red-300"                   },
+  RESTAURADO:  { label: "Restaurado",   bg: "bg-blue-100",     text: "text-blue-700",       border: "border-blue-300"                  },
+  EXTRAIDO:    { label: "Extraído",     bg: "bg-zinc-200",     text: "text-zinc-500",       border: "border-zinc-400"                  },
+  IMPLANTE:    { label: "Implante",     bg: "bg-violet-100",   text: "text-violet-700",     border: "border-violet-300"                },
+  AUSENTE:     { label: "Ausente",      bg: "bg-zinc-100",     text: "text-zinc-400",       border: "border-zinc-300 border-dashed"    },
+  FEITO_CANAL: { label: "Feito Canal",  bg: "bg-amber-100",    text: "text-amber-700",      border: "border-amber-300"                 },
 };
 
 const QUADRANTES: { label: string; dentes: number[] }[] = [
-  { label: "Superior direito", dentes: [18, 17, 16, 15, 14, 13, 12, 11] },
+  { label: "Superior direito",  dentes: [18, 17, 16, 15, 14, 13, 12, 11] },
   { label: "Superior esquerdo", dentes: [21, 22, 23, 24, 25, 26, 27, 28] },
+  { label: "Inferior direito",  dentes: [48, 47, 46, 45, 44, 43, 42, 41] },
   { label: "Inferior esquerdo", dentes: [31, 32, 33, 34, 35, 36, 37, 38] },
-  { label: "Inferior direito", dentes: [48, 47, 46, 45, 44, 43, 42, 41] },
 ];
 
 export function OdontogramaTab({ pacienteId, dadosDentes, onRefresh }: OdontogramaTabProps) {
@@ -145,9 +146,11 @@ export function OdontogramaTab({ pacienteId, dadosDentes, onRefresh }: Odontogra
         </div>
 
         <div className="space-y-1 overflow-x-auto">
-          <div className="grid grid-cols-2 gap-1 min-w-[560px]">
+          {/* Superior */}
+          <div className="relative grid grid-cols-2 min-w-[560px]">
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border/40 -translate-x-1/2 pointer-events-none" />
             {QUADRANTES.slice(0, 2).map((q) => (
-              <div key={q.label} className="space-y-1">
+              <div key={q.label} className={cn("space-y-1", q.label.includes("esquerdo") ? "pl-3" : "pr-3")}>
                 <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground/40 pb-1">
                   {q.label}
                 </p>
@@ -177,9 +180,11 @@ export function OdontogramaTab({ pacienteId, dadosDentes, onRefresh }: Odontogra
 
           <div className="border-t border-dashed border-border/40 my-2" />
 
-          <div className="grid grid-cols-2 gap-1 min-w-[560px]">
+          {/* Inferior */}
+          <div className="relative grid grid-cols-2 min-w-[560px]">
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border/40 -translate-x-1/2 pointer-events-none" />
             {QUADRANTES.slice(2, 4).map((q) => (
-              <div key={q.label} className="space-y-1">
+              <div key={q.label} className={cn("space-y-1", q.label.includes("esquerdo") ? "pl-3" : "pr-3")}>
                 <div className={cn("flex gap-1", q.label.includes("esquerdo") ? "justify-start" : "justify-end")}>
                   {q.dentes.map((n) => {
                     const st = getDenteStatus(n);
@@ -214,16 +219,18 @@ export function OdontogramaTab({ pacienteId, dadosDentes, onRefresh }: Odontogra
 
 function ToothSvg({ status, flipped = false }: { status: StatusDente; flipped?: boolean }) {
   const colorMap: Record<StatusDente, string> = {
-    SADIO:      "#e2e8f0",
-    CARIADO:    "#fca5a5",
-    RESTAURADO: "#93c5fd",
-    EXTRAIDO:   "#9ca3af",
-    IMPLANTE:   "#c4b5fd",
-    AUSENTE:    "#f1f5f9",
+    SADIO:       "#e2e8f0",
+    CARIADO:     "#fca5a5",
+    RESTAURADO:  "#93c5fd",
+    EXTRAIDO:    "#9ca3af",
+    IMPLANTE:    "#c4b5fd",
+    AUSENTE:     "#f1f5f9",
+    FEITO_CANAL: "#fde68a",
   };
 
   const fill = colorMap[status];
   const isExtraido = status === "EXTRAIDO";
+  const isFeitoCanal = status === "FEITO_CANAL";
 
   return (
     <svg
@@ -246,6 +253,9 @@ function ToothSvg({ status, flipped = false }: { status: StatusDente; flipped?: 
           <line x1="7" y1="9" x2="13" y2="15" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="13" y1="9" x2="7" y2="15" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" />
         </>
+      )}
+      {isFeitoCanal && (
+        <circle cx="10" cy="11" r="2.5" fill="#d97706" opacity="0.8" />
       )}
     </svg>
   );

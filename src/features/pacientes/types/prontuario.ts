@@ -6,7 +6,7 @@ export const DENTES_FDI = [
   41, 42, 43, 44, 45, 46, 47, 48, // Quadrante 4 — inf. direito
 ] as const;
 
-export type StatusDente = "SADIO" | "CARIADO" | "RESTAURADO" | "EXTRAIDO" | "IMPLANTE" | "AUSENTE";
+export type StatusDente = "SADIO" | "CARIADO" | "RESTAURADO" | "EXTRAIDO" | "IMPLANTE" | "AUSENTE" | "FEITO_CANAL";
 
 export interface DadosDente {
   id: number;
