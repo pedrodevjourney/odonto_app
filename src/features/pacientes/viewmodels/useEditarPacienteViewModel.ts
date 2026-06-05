@@ -8,14 +8,21 @@ import {
   ESTADO_CIVIL_VALUES,
   type Paciente,
 } from "@/features/pacientes/types/paciente";
+import { validateCpf } from "@/features/pacientes/utils/pacienteHelpers";
 
 const schema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
+  cpf: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || val.replace(/\D/g, "").length === 0 || validateCpf(val),
+      { message: "CPF inválido" },
+    ),
   dataNascimento: z.string().optional(),
   estadoCivil: z.enum(ESTADO_CIVIL_VALUES).optional(),
   profissao: z.string().optional(),
   nacionalidade: z.string().optional(),
-  dlne: z.boolean().optional(),
   telefone: z.string().optional(),
   telefoneSecundario: z.string().optional(),
   residencia: z.string().optional(),
@@ -38,11 +45,11 @@ export function useEditarPacienteViewModel(
     resolver: zodResolver(schema),
     defaultValues: {
       nome: paciente.nome,
+      cpf: paciente.cpf ?? "",
       dataNascimento: paciente.dataNascimento ?? undefined,
       estadoCivil: paciente.estadoCivil,
       profissao: paciente.profissao ?? "",
       nacionalidade: paciente.nacionalidade ?? "",
-      dlne: paciente.dlne ?? false,
       telefone: paciente.telefone ?? "",
       telefoneSecundario: paciente.telefoneSecundario ?? "",
       residencia: paciente.residencia ?? "",
@@ -59,11 +66,11 @@ export function useEditarPacienteViewModel(
 
     const payload: Partial<FormValues> = {
       nome: values.nome,
+      cpf: values.cpf || undefined,
       dataNascimento: values.dataNascimento || undefined,
       estadoCivil: values.estadoCivil,
       profissao: values.profissao || undefined,
       nacionalidade: values.nacionalidade || undefined,
-      dlne: values.dlne,
       telefone: values.telefone || undefined,
       telefoneSecundario: values.telefoneSecundario || undefined,
       residencia: values.residencia || undefined,

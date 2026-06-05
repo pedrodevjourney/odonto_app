@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { DatePickerField } from "@/features/pacientes/components/DatePickerField";
 import { Button } from "@/components/ui/button";
 import { useCadastroPacienteViewModel } from "@/features/pacientes/viewmodels/useCadastroPacienteViewModel";
-import { maskPhone } from "@/features/pacientes/utils/pacienteHelpers";
+import { maskPhone, maskCpf } from "@/features/pacientes/utils/pacienteHelpers";
 
 const ESTADO_CIVIL_LABELS: Record<string, string> = {
   SOLTEIRO: "Solteiro(a)",
@@ -98,6 +98,25 @@ export function CadastroPacienteModal({
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="cpf"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>CPF</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="000.000.000-00"
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(maskCpf(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <SectionTitle>Dados Pessoais</SectionTitle>
@@ -188,28 +207,6 @@ export function CadastroPacienteModal({
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="dlne"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <label className="flex cursor-pointer items-center gap-2.5">
-                        <input
-                          type="checkbox"
-                          checked={field.value ?? false}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                          className="size-4 cursor-pointer rounded border-border"
-                        />
-                        <span className="text-sm font-medium text-foreground/80">
-                          DLNE
-                        </span>
-                      </label>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
 
               <SectionTitle>Contato</SectionTitle>
               <div className="grid grid-cols-2 gap-4">

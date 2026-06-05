@@ -23,7 +23,7 @@ export interface Paciente {
   telefone?: string;
   telefoneSecundario?: string;
   estadoCivil?: EstadoCivil;
-  dlne?: boolean;
+  cpf?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -42,7 +42,7 @@ export interface PacienteFormData {
   telefone?: string;
   telefoneSecundario?: string;
   estadoCivil?: EstadoCivil;
-  dlne?: boolean;
+  cpf?: string;
 }
 
 export interface PacientePage {

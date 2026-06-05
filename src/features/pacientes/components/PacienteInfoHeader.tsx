@@ -8,6 +8,7 @@ import {
   Stethoscope,
   Hash,
   DollarSign,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Paciente } from "@/features/pacientes/types/paciente";
@@ -78,9 +79,10 @@ export function PacienteInfoHeader({ paciente, onFinanceiro }: PacienteInfoHeade
               <Hash className="size-2.5" />
               {paciente.id}
             </span>
-            {paciente.dlne && (
-              <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600/80">
-                DLNE
+            {paciente.cpf && (
+              <span className="flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground/55">
+                <CreditCard className="size-2.5" />
+                {paciente.cpf}
               </span>
             )}
           </div>
