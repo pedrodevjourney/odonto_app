@@ -14,8 +14,8 @@ const lancamentoSchema = z.object({
   tipo: z.enum(["RECEITA", "DESPESA"], { message: "Selecione o tipo." }),
   descricao: z.string().min(1, "Descrição é obrigatória."),
   data: z.string().min(1, "Data é obrigatória."),
-  deve: z.number().min(0).optional(),
-  haver: z.number().min(0).optional(),
+  valorTotal: z.number().min(0).optional(),
+  valorPago: z.number().min(0).optional(),
 });
 
 export type LancamentoFormValues = z.infer<typeof lancamentoSchema>;
@@ -35,8 +35,8 @@ export function useLancamentoFormViewModel(
       tipo: lancamento?.tipo ?? "RECEITA",
       descricao: lancamento?.descricao ?? "",
       data: lancamento?.data ?? new Date().toISOString().slice(0, 10),
-      deve: lancamento?.deve ?? undefined,
-      haver: lancamento?.haver ?? undefined,
+      valorTotal: lancamento?.valorTotal ?? undefined,
+      valorPago: lancamento?.valorPago ?? undefined,
     },
   });
 
@@ -49,8 +49,8 @@ export function useLancamentoFormViewModel(
           tipo: values.tipo,
           descricao: values.descricao,
           data: values.data,
-          deve: values.deve,
-          haver: values.haver,
+          valorTotal: values.valorTotal,
+          valorPago: values.valorPago,
         });
         toast.success("Lançamento atualizado com sucesso.");
       } else {
@@ -59,8 +59,8 @@ export function useLancamentoFormViewModel(
           tipo: values.tipo,
           descricao: values.descricao,
           data: values.data,
-          deve: values.deve,
-          haver: values.haver,
+          valorTotal: values.valorTotal,
+          valorPago: values.valorPago,
         });
         toast.success("Lançamento criado com sucesso.");
       }

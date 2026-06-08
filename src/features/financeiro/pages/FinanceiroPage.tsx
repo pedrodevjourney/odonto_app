@@ -141,13 +141,13 @@ export function FinanceiroPage() {
                           Tipo
                         </th>
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-                          Deve
+                          Valor Total
                         </th>
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-                          Haver
+                          Valor Pago
                         </th>
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-                          Saldo
+                          Valor Restante
                         </th>
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                           Ações
@@ -178,21 +178,21 @@ export function FinanceiroPage() {
                               {l.tipo === "RECEITA" ? "Receita" : "Despesa"}
                             </span>
                           </td>
-                          <td className="whitespace-nowrap px-5 py-3 text-right tabular-nums text-red-600">
-                            {l.deve != null ? formatBRL(l.deve) : "—"}
+                          <td className="whitespace-nowrap px-5 py-3 text-right tabular-nums text-foreground/80">
+                            {l.valorTotal != null ? formatBRL(l.valorTotal) : "—"}
                           </td>
                           <td className="whitespace-nowrap px-5 py-3 text-right tabular-nums text-emerald-600">
-                            {l.haver != null ? formatBRL(l.haver) : "—"}
+                            {l.valorPago != null ? formatBRL(l.valorPago) : "—"}
                           </td>
                           <td
                             className={cn(
                               "whitespace-nowrap px-5 py-3 text-right font-semibold tabular-nums",
-                              l.saldo >= 0
+                              l.valorRestante <= 0
                                 ? "text-emerald-600"
                                 : "text-red-600",
                             )}
                           >
-                            {formatBRL(l.saldo)}
+                            {formatBRL(l.valorRestante)}
                           </td>
                           <td className="px-5 py-3 text-right">
                             <div className="flex items-center justify-end gap-1">

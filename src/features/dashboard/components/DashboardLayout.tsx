@@ -3,7 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/features/dashboard/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { PageActionsProvider, usePageActions } from "@/features/dashboard/contexts/PageActionsContext";
+import {
+  PageActionsProvider,
+  usePageActions,
+} from "@/features/dashboard/contexts/PageActionsContext";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
 import { cn } from "@/lib/utils";

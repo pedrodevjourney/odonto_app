@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import {
   Dialog,
@@ -50,16 +49,9 @@ export function LancamentoModal({
       onSuccess();
     });
 
-  const tipoAtual = form.watch("tipo");
-
-  useEffect(() => {
-    if (lancamento) return;
-    if (tipoAtual === "RECEITA") {
-      form.setValue("deve", undefined);
-    } else {
-      form.setValue("haver", undefined);
-    }
-  }, [tipoAtual, form, lancamento]);
+  const valorTotal = form.watch("valorTotal");
+  const valorPago = form.watch("valorPago");
+  const valorRestante = (valorTotal ?? 0) - (valorPago ?? 0);
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
@@ -140,17 +132,16 @@ export function LancamentoModal({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="deve"
+                name="valorTotal"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deve (R$)</FormLabel>
+                    <FormLabel>Valor Total (R$)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.01"
                         min="0"
                         placeholder="0,00"
-                        disabled={tipoAtual === "RECEITA"}
                         value={field.value ?? ""}
                         onChange={(e) =>
                           field.onChange(
@@ -168,17 +159,16 @@ export function LancamentoModal({
 
               <FormField
                 control={form.control}
-                name="haver"
+                name="valorPago"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Haver (R$)</FormLabel>
+                    <FormLabel>Valor Pago (R$)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         step="0.01"
                         min="0"
                         placeholder="0,00"
-                        disabled={tipoAtual === "DESPESA"}
                         value={field.value ?? ""}
                         onChange={(e) =>
                           field.onChange(
@@ -194,6 +184,21 @@ export function LancamentoModal({
                 )}
               />
             </div>
+
+            {(valorTotal !== undefined || valorPago !== undefined) && (
+              <div className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
+                <span className="text-muted-foreground">Valor Restante</span>
+                <span
+                  className={
+                    valorRestante > 0
+                      ? "font-medium text-destructive"
+                      : "font-medium text-green-600"
+                  }
+                >
+                  R$ {valorRestante.toFixed(2).replace(".", ",")}
+                </span>
+              </div>
+            )}
 
             <DialogFooter className="pt-2">
               <Button

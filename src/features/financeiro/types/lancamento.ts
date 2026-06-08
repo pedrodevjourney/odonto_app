@@ -5,9 +5,9 @@ export interface LancamentoResponse {
   tipo: "RECEITA" | "DESPESA";
   descricao: string;
   data: string;
-  deve: number | null;
-  haver: number | null;
-  saldo: number;
+  valorTotal: number | null;
+  valorPago: number | null;
+  valorRestante: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -17,24 +17,24 @@ export interface LancamentoRequest {
   tipo: "RECEITA" | "DESPESA";
   descricao: string;
   data: string;
-  deve?: number;
-  haver?: number;
+  valorTotal?: number;
+  valorPago?: number;
 }
 
 export interface LancamentoUpdateRequest {
   tipo?: "RECEITA" | "DESPESA";
   descricao?: string;
   data?: string;
-  deve?: number;
-  haver?: number;
+  valorTotal?: number;
+  valorPago?: number;
 }
 
 export interface ResumoFinanceiroResponse {
   pacienteId: number;
   pacienteNome: string;
-  totalDeve: number;
-  totalHaver: number;
-  saldoGeral: number;
+  totalValorTotal: number;
+  totalValorPago: number;
+  valorRestanteGeral: number;
 }
 
 export interface FiltrosLancamento {

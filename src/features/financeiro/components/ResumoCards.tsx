@@ -8,32 +8,32 @@ interface ResumoCardsProps {
 }
 
 export function ResumoCards({ resumo }: ResumoCardsProps) {
-  const saldoPositivo = resumo.saldoGeral >= 0;
+  const quitado = resumo.valorRestanteGeral <= 0;
 
   const cards = [
     {
-      label: "Total Deve",
-      value: resumo.totalDeve,
+      label: "Valor Total",
+      value: resumo.totalValorTotal,
       icon: TrendingDown,
-      color: "text-red-600",
-      bg: "bg-red-50",
-      iconBg: "bg-red-100",
+      color: "text-foreground/80",
+      bg: "bg-muted/40",
+      iconBg: "bg-muted",
     },
     {
-      label: "Total Haver",
-      value: resumo.totalHaver,
+      label: "Valor Pago",
+      value: resumo.totalValorPago,
       icon: TrendingUp,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
       iconBg: "bg-emerald-100",
     },
     {
-      label: "Saldo Geral",
-      value: resumo.saldoGeral,
+      label: "Valor Restante",
+      value: resumo.valorRestanteGeral,
       icon: Wallet,
-      color: saldoPositivo ? "text-emerald-600" : "text-red-600",
-      bg: saldoPositivo ? "bg-emerald-50" : "bg-red-50",
-      iconBg: saldoPositivo ? "bg-emerald-100" : "bg-red-100",
+      color: quitado ? "text-emerald-600" : "text-red-600",
+      bg: quitado ? "bg-emerald-50" : "bg-red-50",
+      iconBg: quitado ? "bg-emerald-100" : "bg-red-100",
     },
   ];
 
