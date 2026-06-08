@@ -49,6 +49,7 @@ export function LancamentoModal({
       onSuccess();
     });
 
+  const tipo = form.watch("tipo");
   const valorTotal = form.watch("valorTotal");
   const valorPago = form.watch("valorPago");
   const valorRestante = (valorTotal ?? 0) - (valorPago ?? 0);
@@ -184,6 +185,36 @@ export function LancamentoModal({
                 )}
               />
             </div>
+
+            {tipo === "RECEITA" && (
+              <FormField
+                control={form.control}
+                name="formaPagamento"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Forma de Pagamento</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value ?? ""}
+                        onValueChange={(val) =>
+                          field.onChange(val === "" ? undefined : val)
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione (opcional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DINHEIRO">Dinheiro</SelectItem>
+                          <SelectItem value="PIX">Pix</SelectItem>
+                          <SelectItem value="CARTAO">Cartão</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {(valorTotal !== undefined || valorPago !== undefined) && (
               <div className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">

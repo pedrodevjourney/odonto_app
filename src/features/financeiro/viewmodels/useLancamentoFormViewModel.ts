@@ -16,6 +16,7 @@ const lancamentoSchema = z.object({
   data: z.string().min(1, "Data é obrigatória."),
   valorTotal: z.number().min(0).optional(),
   valorPago: z.number().min(0).optional(),
+  formaPagamento: z.enum(["DINHEIRO", "PIX", "CARTAO"]).optional(),
 });
 
 export type LancamentoFormValues = z.infer<typeof lancamentoSchema>;
@@ -37,6 +38,7 @@ export function useLancamentoFormViewModel(
       data: lancamento?.data ?? new Date().toISOString().slice(0, 10),
       valorTotal: lancamento?.valorTotal ?? undefined,
       valorPago: lancamento?.valorPago ?? undefined,
+      formaPagamento: lancamento?.formaPagamento ?? undefined,
     },
   });
 
@@ -51,6 +53,7 @@ export function useLancamentoFormViewModel(
           data: values.data,
           valorTotal: values.valorTotal,
           valorPago: values.valorPago,
+          formaPagamento: values.tipo === "RECEITA" ? values.formaPagamento : undefined,
         });
         toast.success("Lançamento atualizado com sucesso.");
       } else {
@@ -61,6 +64,7 @@ export function useLancamentoFormViewModel(
           data: values.data,
           valorTotal: values.valorTotal,
           valorPago: values.valorPago,
+          formaPagamento: values.tipo === "RECEITA" ? values.formaPagamento : undefined,
         });
         toast.success("Lançamento criado com sucesso.");
       }

@@ -1,3 +1,5 @@
+export type FormaPagamento = "DINHEIRO" | "PIX" | "CARTAO";
+
 export interface LancamentoResponse {
   id: number;
   pacienteId: number;
@@ -8,6 +10,7 @@ export interface LancamentoResponse {
   valorTotal: number | null;
   valorPago: number | null;
   valorRestante: number;
+  formaPagamento: FormaPagamento | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -19,6 +22,7 @@ export interface LancamentoRequest {
   data: string;
   valorTotal?: number;
   valorPago?: number;
+  formaPagamento?: FormaPagamento;
 }
 
 export interface LancamentoUpdateRequest {
@@ -27,6 +31,7 @@ export interface LancamentoUpdateRequest {
   data?: string;
   valorTotal?: number;
   valorPago?: number;
+  formaPagamento?: FormaPagamento;
 }
 
 export interface ResumoFinanceiroResponse {
@@ -42,3 +47,9 @@ export interface FiltrosLancamento {
   dataFim?: string;
   tipo?: "RECEITA" | "DESPESA";
 }
+
+export const FORMA_PAGAMENTO_LABELS: Record<FormaPagamento, string> = {
+  DINHEIRO: "Dinheiro",
+  PIX: "Pix",
+  CARTAO: "Cartão",
+};

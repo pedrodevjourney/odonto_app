@@ -18,6 +18,7 @@ import { formatBRL } from "@/features/financeiro/utils/formatBRL";
 import { formatDate } from "@/features/pacientes/utils/pacienteHelpers";
 import { cn } from "@/lib/utils";
 import type { LancamentoResponse } from "@/features/financeiro/types/lancamento";
+import { FORMA_PAGAMENTO_LABELS } from "@/features/financeiro/types/lancamento";
 
 export function FinanceiroPage() {
   const { id } = useParams<{ id: string }>();
@@ -149,6 +150,9 @@ export function FinanceiroPage() {
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                           Valor Restante
                         </th>
+                        <th className="px-5 py-3 text-left text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+                          Pagamento
+                        </th>
                         <th className="px-5 py-3 text-right text-[12px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                           Ações
                         </th>
@@ -193,6 +197,15 @@ export function FinanceiroPage() {
                             )}
                           >
                             {formatBRL(l.valorRestante)}
+                          </td>
+                          <td className="px-5 py-3">
+                            {l.formaPagamento ? (
+                              <span className="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-blue-100 text-blue-700">
+                                {FORMA_PAGAMENTO_LABELS[l.formaPagamento]}
+                              </span>
+                            ) : (
+                              <span className="text-[12px] text-muted-foreground/40">—</span>
+                            )}
                           </td>
                           <td className="px-5 py-3 text-right">
                             <div className="flex items-center justify-end gap-1">

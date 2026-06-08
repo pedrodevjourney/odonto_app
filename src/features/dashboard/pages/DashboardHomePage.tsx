@@ -15,6 +15,8 @@ import { AttendanceDonutChart } from "../components/AttendanceDonutChart";
 import { NextAppointmentsTable } from "../components/NextAppointmentsTable";
 import { ProceduresBarChart } from "../components/ProceduresBarChart";
 import { AlertaRetornoCard } from "../components/AlertaRetornoCard";
+import { RecebimentoCard } from "../components/RecebimentoCard";
+import { ClientesHojeCard } from "../components/ClientesHojeCard";
 import { Button } from "@/components/ui/button";
 
 export function DashboardHomePage() {
@@ -96,13 +98,30 @@ export function DashboardHomePage() {
           <AttendanceDonutChart consultas={data.consultas} />
         </div>
 
-        {/* Row 3: Next Appointments + Procedures Chart */}
+        {/* Row 3: Recebimento Hoje + Recebimento do Mês por forma */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <RecebimentoCard
+            title="Recebimento de Hoje"
+            total={data.recebimentoHoje.total}
+            porForma={data.recebimentoHoje.porForma}
+          />
+          <RecebimentoCard
+            title="Recebimento do Mês por Forma"
+            total={data.financeiro.receitaMes}
+            porForma={data.financeiro.receitaPorFormaMes}
+          />
+        </div>
+
+        {/* Row 4: Lista de Clientes do Dia */}
+        <ClientesHojeCard clientes={data.recebimentoHoje.clientes} />
+
+        {/* Row 5: Next Appointments + Procedures Chart */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <NextAppointmentsTable consultas={data.proximasConsultas} />
           <ProceduresBarChart procedimentos={data.procedimentosMaisRealizados} />
         </div>
 
-        {/* Row 4: Alerta de Retorno */}
+        {/* Row 6: Alerta de Retorno */}
         <AlertaRetornoCard alertas={data.alertasRetorno} />
       </div>
     </div>

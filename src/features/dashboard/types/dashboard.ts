@@ -17,10 +17,31 @@ export interface DashboardConsultas {
   taxaComparecimentoMes: number;
 }
 
+export interface RecebimentoPorForma {
+  formaPagamento: string;
+  valor: number;
+}
+
 export interface DashboardFinanceiro {
   receitaMes: number;
   despesaMes: number;
   saldoMes: number;
+  receitaPorFormaMes: RecebimentoPorForma[];
+}
+
+export interface ClienteHoje {
+  pacienteId: number;
+  pacienteNome: string;
+  lancamentoId: number;
+  descricao: string;
+  valorPago: number;
+  formaPagamento: string | null;
+}
+
+export interface RecebimentoHoje {
+  total: number;
+  porForma: RecebimentoPorForma[];
+  clientes: ClienteHoje[];
 }
 
 export interface DashboardProximaConsulta {
@@ -53,6 +74,7 @@ export interface DashboardResponse {
   pacientes: DashboardPacientes;
   consultas: DashboardConsultas;
   financeiro: DashboardFinanceiro;
+  recebimentoHoje: RecebimentoHoje;
   proximasConsultas: DashboardProximaConsulta[];
   procedimentosMaisRealizados: DashboardProcedimento[];
   alertasRetorno: AlertaRetorno[];
