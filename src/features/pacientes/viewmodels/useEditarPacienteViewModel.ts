@@ -82,7 +82,11 @@ export function useEditarPacienteViewModel(
     };
 
     try {
-      const updated = await editarPaciente(user.token, paciente.id, payload);
+      const updated = await editarPaciente(user.token, paciente.id, {
+        ...payload,
+        // Prospect with data saved → convert to registered patient automatically
+        ...(paciente.prospecto ? { prospecto: false } : {}),
+      });
       toast.success("Paciente atualizado com sucesso!");
       onSuccess(updated);
     } catch (err) {

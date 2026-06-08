@@ -61,6 +61,15 @@ export function usePacientesViewModel(): PacientesViewModel {
     fetchPacientes(debouncedSearch || undefined);
   }, [fetchPacientes, debouncedSearch]);
 
+  // Re-fetch when the user returns to this tab/window (catches prospect creation on another page)
+  useEffect(() => {
+    function handleFocus() {
+      fetchPacientes(debouncedSearch || undefined);
+    }
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [fetchPacientes, debouncedSearch]);
+
   const reloadList = () => fetchPacientes(debouncedSearch || undefined);
 
   async function handleExcluir(id: number) {

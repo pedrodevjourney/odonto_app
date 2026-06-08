@@ -252,6 +252,9 @@ export function PacientesPage() {
                       Telefone
                     </th>
                     <th className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
+                      Situação
+                    </th>
+                    <th className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/55">
                       Início do Tratamento
                     </th>
                     <th className="w-16 px-6 py-3" />
@@ -280,6 +283,19 @@ export function PacientesPage() {
                       </td>
                       <td className="px-6 py-4 text-muted-foreground/60">
                         {paciente.telefone ?? "—"}
+                      </td>
+                      <td className="px-6 py-4">
+                        {paciente.prospecto ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700 ring-1 ring-amber-200">
+                            <span className="size-1.5 rounded-full bg-amber-400" />
+                            Novo cliente
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">
+                            <span className="size-1.5 rounded-full bg-emerald-400" />
+                            Cadastrado
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-muted-foreground/60">
                         {formatDate(paciente.inicioTratamento) ?? "—"}

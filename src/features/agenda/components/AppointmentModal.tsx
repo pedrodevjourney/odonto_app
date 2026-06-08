@@ -22,12 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2 } from "lucide-react";
+import { Check, Info, Loader2, Trash2, UserRoundPlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { StatusBadge } from "./StatusBadge";
 import { DateTimeInput } from "./DateTimeInput";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { PatientCombobox } from "./PatientCombobox";
 import { useAppointmentFormViewModel } from "../viewmodels/useAppointmentFormViewModel";
 import type { Consulta, ConsultaFormData } from "../types/agenda";
 import {
@@ -62,24 +65,35 @@ export function AppointmentModal({
 }: AppointmentModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { form, handleSubmit, isSubmitting, pacientes, loadingOptions } =
-    useAppointmentFormViewModel({
-      initialData: consulta
-        ? {
-            pacienteId: consulta.pacienteId,
-            dataHoraInicio: defaultStart,
-            dataHoraFim: defaultEnd,
-            tipo: consulta.tipo,
-            observacoes: consulta.observacoes ?? "",
-            status: consulta.status,
-          }
-        : {
-            dataHoraInicio: defaultStart,
-            dataHoraFim: defaultEnd,
-            observacoes: "",
-          },
-      onSubmit,
-    });
+  const {
+    form,
+    handleSubmit,
+    isSubmitting,
+    pacientes,
+    loadingOptions,
+    isNewPatient,
+    toggleNewPatient,
+    newPatientName,
+    setNewPatientName,
+    newPatientNameError,
+    isCreatingProspect,
+  } = useAppointmentFormViewModel({
+    initialData: consulta
+      ? {
+          pacienteId: consulta.pacienteId,
+          dataHoraInicio: defaultStart,
+          dataHoraFim: defaultEnd,
+          tipo: consulta.tipo,
+          observacoes: consulta.observacoes ?? "",
+          status: consulta.status,
+        }
+      : {
+          dataHoraInicio: defaultStart,
+          dataHoraFim: defaultEnd,
+          observacoes: "",
+        },
+    onSubmit,
+  });
 
   const isEdit = mode === "edit";
   const isCancelled = consulta?.status === ConsultaStatus.CANCELADA;
@@ -124,40 +138,98 @@ export function AppointmentModal({
           <Form {...form}>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="pacienteId"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Paciente</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value ? String(field.value) : undefined}
-                          onValueChange={(val) => field.onChange(Number(val))}
-                          disabled={loadingOptions}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Selecione o paciente">
-                              {field.value
-                                ? (pacientes.find((p) => p.id === field.value)
-                                    ?.nome ?? "")
-                                : undefined}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {pacientes.map((p) => (
-                              <SelectItem key={p.id} value={String(p.id)}>
-                                {p.nome}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
+                {/* ── Patient field ── */}
+                <div className="col-span-2 space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="pacienteId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Paciente</FormLabel>
+
+                          {/* Novo paciente toggle — inline with label */}
+                          {!isEdit && (
+                            <label
+                              htmlFor="novo-paciente-toggle"
+                              className={cn(
+                                "flex cursor-pointer select-none items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
+                                isNewPatient
+                                  ? "bg-amber-50 font-semibold text-amber-700 ring-1 ring-amber-200"
+                                  : "text-muted-foreground hover:bg-muted/50",
+                              )}
+                            >
+                              <input
+                                id="novo-paciente-toggle"
+                                type="checkbox"
+                                className="sr-only"
+                                checked={isNewPatient}
+                                onChange={(e) => toggleNewPatient(e.target.checked)}
+                                disabled={isSubmitting}
+                              />
+                              <span
+                                className={cn(
+                                  "flex size-3.5 shrink-0 items-center justify-center rounded border transition-colors",
+                                  isNewPatient
+                                    ? "border-amber-500 bg-amber-500 text-white"
+                                    : "border-muted-foreground/40 bg-transparent",
+                                )}
+                              >
+                                {isNewPatient && <Check className="size-2.5" />}
+                              </span>
+                              <UserRoundPlus className="size-3 shrink-0" />
+                              <span>Paciente não cadastrado</span>
+                            </label>
+                          )}
+                        </div>
+
+                        <FormControl>
+                          {isNewPatient ? (
+                            /* New-patient name input */
+                            <div className="space-y-1.5">
+                              <Input
+                                placeholder="Nome ou apelido do paciente..."
+                                value={newPatientName}
+                                onChange={(e) => {
+                                  setNewPatientName(e.target.value);
+                                }}
+                                disabled={isSubmitting}
+                                autoFocus
+                              />
+                              {newPatientNameError && (
+                                <p className="text-[12px] font-medium text-destructive">
+                                  {newPatientNameError}
+                                </p>
+                              )}
+                              <div className="flex items-start gap-1.5 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 ring-1 ring-amber-200">
+                                <Info className="mt-px size-3.5 shrink-0" />
+                                <span>
+                                  Apenas o nome é necessário agora. O cadastro
+                                  completo pode ser feito depois, quando o
+                                  paciente chegar.
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            /* Existing patient search */
+                            <PatientCombobox
+                              patients={pacientes}
+                              value={field.value}
+                              onChange={field.onChange}
+                              loading={loadingOptions}
+                              disabled={isSubmitting}
+                            />
+                          )}
+                        </FormControl>
+                        {!isNewPatient && <FormMessage />}
+                      </FormItem>
+                    )}
+                  />
+
+                </div>
+
+                {/* ── Procedure ── */}
                 <FormField
                   control={form.control}
                   name="tipo"
@@ -192,6 +264,7 @@ export function AppointmentModal({
                   )}
                 />
 
+                {/* ── Date / time ── */}
                 <FormField
                   control={form.control}
                   name="dataHoraInicio"
@@ -220,6 +293,7 @@ export function AppointmentModal({
                   )}
                 />
 
+                {/* ── Status (edit only) ── */}
                 {isEdit && (
                   <FormField
                     control={form.control}
@@ -256,6 +330,7 @@ export function AppointmentModal({
                   />
                 )}
 
+                {/* ── Notes ── */}
                 <FormField
                   control={form.control}
                   name="observacoes"
@@ -289,7 +364,7 @@ export function AppointmentModal({
                   Fechar
                 </Button>
                 <Button type="submit" disabled={isSubmitting || isCancelled}>
-                  {isSubmitting && (
+                  {(isSubmitting || isCreatingProspect) && (
                     <Loader2 className="mr-2 size-4 animate-spin" />
                   )}
                   {isEdit ? "Salvar" : "Agendar"}

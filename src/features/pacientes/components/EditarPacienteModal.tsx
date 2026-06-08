@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -84,6 +84,20 @@ export function EditarPacienteModal({
             className="flex min-h-0 flex-1 flex-col"
           >
             <div className="flex-1 space-y-4 overflow-y-auto px-1 py-1">
+
+              {/* Banner for prospect patients */}
+              {paciente.prospecto && (
+                <div className="flex items-start gap-2.5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
+                  <Info className="mt-0.5 size-4 shrink-0 text-amber-500" />
+                  <div>
+                    <p className="font-semibold">Novo cliente — cadastro pendente</p>
+                    <p className="mt-0.5 text-xs text-amber-700">
+                      Preencha os dados e salve para concluir o cadastro. O status mudará para <strong>Cadastrado</strong> automaticamente.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <SectionTitle>Identificação</SectionTitle>
               <div className="grid grid-cols-3 gap-4">
                 <FormField

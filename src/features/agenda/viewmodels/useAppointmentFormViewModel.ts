@@ -3,14 +3,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
-import { listarPacientes } from "@/features/pacientes/services/pacienteService";
+import { cadastrarPaciente, listarPacientes } from "@/features/pacientes/services/pacienteService";
 import type { Paciente } from "@/features/pacientes/types/paciente";
 import type { ConsultaFormData } from "../types/agenda";
 import { ConsultaStatus, TipoProcedimento } from "../types/agenda";
 
 const consultaSchema = z
   .object({
-    pacienteId: z.number({ error: "Selecione um paciente" }),
+    // optional here — validated manually when isNewPatient = false
+    pacienteId: z.number().optional(),
     dataHoraInicio: z.string().min(1, "Informe a data e hora de início"),
     dataHoraFim: z.string().min(1, "Informe a data e hora de fim"),
     tipo: z.enum(Object.values(TipoProcedimento) as [string, ...string[]], {
@@ -53,6 +54,12 @@ export function useAppointmentFormViewModel({
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
+  // New-patient mode state (outside form schema)
+  const [isNewPatient, setIsNewPatient] = useState(false);
+  const [newPatientName, setNewPatientName] = useState("");
+  const [newPatientNameError, setNewPatientNameError] = useState<string | null>(null);
+  const [isCreatingProspect, setIsCreatingProspect] = useState(false);
+
   const buildDefaultValues = (data?: Partial<ConsultaFormData>): ConsultaSchemaType => ({
     pacienteId: data?.pacienteId ?? undefined,
     dataHoraInicio: data?.dataHoraInicio ?? "",
@@ -68,9 +75,11 @@ export function useAppointmentFormViewModel({
     defaultValues: buildDefaultValues(initialData),
   });
 
-  // Reset form whenever the modal reopens with new data
   useEffect(() => {
     form.reset(buildDefaultValues(initialData));
+    setIsNewPatient(false);
+    setNewPatientName("");
+    setNewPatientNameError(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData?.pacienteId, initialData?.dataHoraInicio, initialData?.dataHoraFim]);
 
@@ -78,10 +87,10 @@ export function useAppointmentFormViewModel({
     if (!user?.token) return;
     setLoadingOptions(true);
     try {
-      const pacientesResult = await listarPacientes(user.token, { size: 100 });
-      setPacientes(pacientesResult.content);
+      const result = await listarPacientes(user.token, { size: 200 });
+      setPacientes(result.content);
     } catch {
-      // Options will remain empty
+      // silent
     } finally {
       setLoadingOptions(false);
     }
@@ -91,19 +100,69 @@ export function useAppointmentFormViewModel({
     fetchOptions();
   }, [fetchOptions]);
 
+  function toggleNewPatient(checked: boolean) {
+    setIsNewPatient(checked);
+    setNewPatientName("");
+    setNewPatientNameError(null);
+    form.setValue("pacienteId", undefined);
+    form.clearErrors("pacienteId");
+  }
+
   const handleSubmit = form.handleSubmit(async (data) => {
-    const payload: ConsultaFormData = {
-      ...data,
-      observacoes: data.observacoes || undefined,
-    } as ConsultaFormData;
-    await onSubmit(payload);
+    // Validate the patient selection depending on mode
+    if (isNewPatient) {
+      const trimmed = newPatientName.trim();
+      if (trimmed.length < 2) {
+        setNewPatientNameError("Informe um nome com ao menos 2 caracteres");
+        return;
+      }
+      setNewPatientNameError(null);
+      setIsCreatingProspect(true);
+      let novoId: number;
+      try {
+        const novo = await cadastrarPaciente(user.token!, { nome: trimmed, prospecto: true });
+        setPacientes((prev) =>
+          [...prev, novo].sort((a, b) => a.nome.localeCompare(b.nome)),
+        );
+        novoId = novo.id;
+      } finally {
+        setIsCreatingProspect(false);
+      }
+      await onSubmit({
+        pacienteId: novoId!,
+        dataHoraInicio: data.dataHoraInicio,
+        dataHoraFim: data.dataHoraFim,
+        tipo: data.tipo as TipoProcedimento,
+        observacoes: data.observacoes || undefined,
+        status: data.status,
+      });
+    } else {
+      if (!data.pacienteId) {
+        form.setError("pacienteId", { message: "Selecione um paciente" });
+        return;
+      }
+      await onSubmit({
+        pacienteId: data.pacienteId,
+        dataHoraInicio: data.dataHoraInicio,
+        dataHoraFim: data.dataHoraFim,
+        tipo: data.tipo as TipoProcedimento,
+        observacoes: data.observacoes || undefined,
+        status: data.status,
+      });
+    }
   });
 
   return {
     form,
     handleSubmit,
-    isSubmitting: form.formState.isSubmitting,
+    isSubmitting: form.formState.isSubmitting || isCreatingProspect,
     pacientes,
     loadingOptions,
+    isNewPatient,
+    toggleNewPatient,
+    newPatientName,
+    setNewPatientName,
+    newPatientNameError,
+    isCreatingProspect,
   };
 }

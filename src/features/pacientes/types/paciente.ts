@@ -24,6 +24,7 @@ export interface Paciente {
   telefoneSecundario?: string;
   estadoCivil?: EstadoCivil;
   cpf?: string;
+  prospecto?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,6 +44,7 @@ export interface PacienteFormData {
   telefoneSecundario?: string;
   estadoCivil?: EstadoCivil;
   cpf?: string;
+  prospecto?: boolean;
 }
 
 export interface PacientePage {
