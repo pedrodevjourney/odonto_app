@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type DefaultValues } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/features/auth/contexts/AuthContext";
@@ -60,7 +60,9 @@ export function useAppointmentFormViewModel({
   const [newPatientNameError, setNewPatientNameError] = useState<string | null>(null);
   const [isCreatingProspect, setIsCreatingProspect] = useState(false);
 
-  const buildDefaultValues = (data?: Partial<ConsultaFormData>): ConsultaSchemaType => ({
+  // DefaultValues (e não ConsultaSchemaType): campos obrigatórios do schema podem
+  // começar vazios no formulário — quem cobra o preenchimento é a validação.
+  const buildDefaultValues = (data?: Partial<ConsultaFormData>): DefaultValues<ConsultaSchemaType> => ({
     pacienteId: data?.pacienteId ?? undefined,
     dataHoraInicio: data?.dataHoraInicio ?? "",
     dataHoraFim: data?.dataHoraFim ?? "",
@@ -109,6 +111,8 @@ export function useAppointmentFormViewModel({
   }
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    if (!user?.token) return;
+
     // Validate the patient selection depending on mode
     if (isNewPatient) {
       const trimmed = newPatientName.trim();
@@ -120,7 +124,7 @@ export function useAppointmentFormViewModel({
       setIsCreatingProspect(true);
       let novoId: number;
       try {
-        const novo = await cadastrarPaciente(user.token!, { nome: trimmed, prospecto: true });
+        const novo = await cadastrarPaciente(user.token, { nome: trimmed, prospecto: true });
         setPacientes((prev) =>
           [...prev, novo].sort((a, b) => a.nome.localeCompare(b.nome)),
         );

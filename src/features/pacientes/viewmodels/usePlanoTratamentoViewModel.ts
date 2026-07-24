@@ -6,17 +6,36 @@ import { useAuth } from "@/features/auth/contexts/AuthContext";
 import { addItemPlano, updateItemPlano } from "@/features/pacientes/services/prontuarioService";
 import type { PlanoTratamento } from "@/features/pacientes/types/prontuario";
 
+/**
+ * Campo numérico opcional vindo de um <input>: o formulário entrega string, a
+ * aplicação precisa de number. Declarado como union em vez de z.coerce para que o
+ * tipo de entrada seja `string | number` (com z.coerce ele é `unknown`, e o valor
+ * deixa de ser aceito pelo componente de input).
+ */
+const numeroOpcional = z
+  .union([z.string(), z.number()])
+  .optional()
+  .transform((valor) => {
+    if (valor === undefined || valor === "") return undefined;
+    return Number(valor); // texto inválido virá NaN e é recusado no pipe abaixo
+  })
+  .pipe(z.number("Informe um número válido").optional());
+
 const schema = z.object({
   procedimento: z.string().min(1, "Procedimento é obrigatório"),
-  numeroDente: z.coerce.number().optional(),
+  numeroDente: numeroOpcional,
   status: z.enum(["PENDENTE", "EM_ANDAMENTO", "CONCLUIDO", "CANCELADO"]).optional(),
   observacoes: z.string().optional(),
-  valor: z.coerce.number().optional(),
+  valor: numeroOpcional,
   dataPrevista: z.string().optional(),
   dataConclusao: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof schema>;
+// z.coerce faz o tipo de entrada do formulário (o que vem dos inputs) ser
+// diferente do de saída (o que o schema devolve validado). Os dois genéricos
+// precisam ser explícitos para o resolver bater com o useForm.
+type FormInput = z.input<typeof schema>;
+type FormValues = z.output<typeof schema>;
 
 export function usePlanoTratamentoViewModel(
   pacienteId: number,
@@ -25,7 +44,7 @@ export function usePlanoTratamentoViewModel(
 ) {
   const { user } = useAuth();
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       procedimento: itemParaEditar?.procedimento ?? "",

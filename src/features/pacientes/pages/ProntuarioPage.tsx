@@ -59,7 +59,6 @@ export function ProntuarioPage() {
     refreshAnotacoes,
     refreshFichasClinicas,
     refreshPlanoTratamento,
-    refreshHistorico,
   } = useProntuarioViewModel(pacienteId);
 
   const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [

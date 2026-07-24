@@ -1,0 +1,28 @@
+name: CI
+
+# Roda o MESMO comando que o Cloudflare Pages executa (tsc -b && vite build):
+# um erro de tipo aqui é um deploy recusado lá.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  front:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      # Informativo por ora: há 10 apontamentos antigos (uso de `any` e a regra
+      # react-refresh/only-export-components). Nenhum impede o build. Depois de
+      # limpá-los, remova o continue-on-error para o lint virar portão de verdade.
+      - name: Lint (informativo)
+        run: npm run lint
+        continue-on-error: true
+      - name: Build de produção
+        run: npm run build
